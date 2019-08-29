@@ -34,6 +34,13 @@ class Facility(models.Model):
     main_studio_contact = JSONField()
     cc_contact = JSONField()
 
+    def __str__(self):
+        return self.call_sign
+
+    class Meta:
+        verbose_name = 'Facility'
+        verbose_name_plural = "Facilities"
+
     
 class Folder(models.Model):
     entity_folder_id = models.UUIDField(max_length=200, primary_key=True)
@@ -51,6 +58,8 @@ class Folder(models.Model):
     create_ts = models.CharField(max_length=200)
     last_update_ts = models.CharField(max_length=200)
 
+    def __str__(self):
+        return self.folder_path
     
 class File(models.Model):
     file_id = models.UUIDField(max_length=200, primary_key=True)
@@ -64,5 +73,8 @@ class File(models.Model):
     create_ts = models.CharField(max_length=200)
     last_update_ts = models.CharField(max_length=200)
     file_manager_id = models.CharField(max_length=200)
+
+    def __str__(self):
+        return self.file_name
 
 
