@@ -1,5 +1,7 @@
 from django.db import models
 from django.contrib.postgres.fields import JSONField
+from fcc_opif.constants import API_URL
+from fcc_opif.utils import camelcase_to_underscore
 
 class Facility(models.Model):
     id = models.CharField(max_length=5, primary_key=True)
@@ -18,11 +20,11 @@ class Facility(models.Model):
     active_ind = models.BooleanField()
     scanned_letter_ids = models.CharField(max_length=200, blank=True)
     party_name = models.CharField(max_length=200)
-    party_address_1 = models.CharField(max_length=200)
-    party_address_2 = models.CharField(max_length=200)
+    party_address1 = models.CharField(max_length=200)
+    party_address2 = models.CharField(max_length=200)
     party_city = models.CharField(max_length=200)
-    party_zip_1 = models.CharField(max_length=5)
-    party_zip_2 = models.CharField(max_length=5, blank=True)
+    party_zip1 = models.CharField(max_length=5)
+    party_zip2 = models.CharField(max_length=5, blank=True)
     party_state = models.CharField(max_length=2)
     party_phone = models.CharField(max_length=13) #do we want specific format for phone numbers? (xxx)xxx-xxxx?
     nielsen_dma = models.CharField(max_length=200)
@@ -33,6 +35,22 @@ class Facility(models.Model):
 
     main_studio_contact = JSONField()
     cc_contact = JSONField()
+
+    def update_political_folders(self):
+        folder_path_endpoint = API_URL + 'manager/folder/path.json'
+        payload = {
+            'folderPath': 'Political Files',
+            'entityId' : self.id,
+            'sourceService' : self.service
+        }
+        r = requests.get(folder_path_endpoint, params=payload)
+        results = r.json()['folder'][0]
+        self.folder_set.create(**results)
+        folder_endpoint = API_URL + 'manager/folder/id/{folderID}.json'
+        payload = {'entityId': self.id}
+        r = requests.get(
+            folder_endpoint.format(folderId=)
+            )
 
     def __str__(self):
         return self.call_sign
@@ -46,7 +64,6 @@ class Folder(models.Model):
     entity_folder_id = models.UUIDField(max_length=200, primary_key=True)
     
     facility = models.ForeignKey(Facility, on_delete=models.CASCADE)
-    entity_id = models.CharField(max_length=5) #??
     folder_name = models.CharField(max_length=200)
     folder_path = models.CharField(max_length=200)
     allow_rename_ind = models.BooleanField()
