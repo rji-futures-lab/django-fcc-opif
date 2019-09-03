@@ -5,6 +5,8 @@ verify_ssl = true
 
 [dev-packages]
 django-debug-toolbar = "*"
+flake8 = "*"
+ipdb = "*"
 
 [packages]
 jupyter = "*"
