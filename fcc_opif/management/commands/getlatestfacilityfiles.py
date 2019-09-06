@@ -32,12 +32,14 @@ class Command(BaseCommand):
                 service_type=self.service_type.lower(),
             )
             msg = self.style.SUCCESS(f"{facility} was created.")
-        finally:
+        else:
             msg = self.style.SUCCESS(f"{facility} was updated.")
+
+        print(facility_id)
 
         facility.refresh_from_fcc()
         self.stdout.write(msg)
-        # facility.refresh_all_files()
+        facility.refresh_all_files()
 
     def get_all_facilities(self, serviceType):
         url = f"{FCC_API_URL}/service/{serviceType.lower()}/facility/getall.json"
