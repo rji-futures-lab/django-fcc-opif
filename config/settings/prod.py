@@ -4,7 +4,6 @@ from .base import *
 ALLOWED_HOSTS = [
     '.execute-api.us-east-2.amazonaws.com',
     '.rjifuture.org',
-    '.tweetstotext.io',
 ]
 
 INSTALLED_APPS = INSTALLED_APPS + ['storages', ]

@@ -14,6 +14,8 @@ requests = "*"
 requests-cache = "*"
 django = "*"
 psycopg2-binary = "*"
+zappa = "*"
+django-storages = "*"
 
 [requires]
 python_version = "3.7"
