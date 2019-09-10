@@ -48,7 +48,6 @@ class Facility(models.Model):
         endpoint_url = f"{FCC_API_URL}/service/{serviceType}/facility/id/{entityID}.json"
 
         r = requests.get(endpoint_url)
-        #json_cleaner(r.json['results']['facility'])
         
         for key, value in r.json()['results']['facility'].items():
             if type(value) == str:
@@ -78,7 +77,6 @@ class Facility(models.Model):
             clean_data = json_cleaner(folder_data)
             clean_data['entity_id'] = self.id
             folder, created = self.folders.update_or_create(defaults = clean_data, entity_folder_id = clean_data["entity_folder_id"])
-            # import ipdb; ipdb.set_trace()
             folder.refresh_from_fcc()
 
         return self.save()
@@ -199,6 +197,12 @@ class File(models.Model):
     file_manager_id = models.CharField(max_length=200)
     moved_from = models.CharField(max_length=200, null=True)
     moved_ts = models.CharField(max_length=200, null=True)
+
+    @property
+    def url(self):
+        fileManagerID = self.file_manager_id
+        folderID = self.folder.entity_folder_id
+        return f"{FCC_API_URL}/manager/download/{folderID}/{fileManagerID}.pdf"
 
     def refresh_from_fcc(self):
         """
