@@ -19,6 +19,8 @@ config.read(os.path.join(ROOT_DIR, 'secrets.cfg'))
 secrets = config[django_env]
 
 SECRET_KEY = secrets.get('django_secret_key')
+DOCUMENTCLOUD_USERNAME = secrets.get('documentcloud_username')
+DOCUMENTCLOUD_PASSWORD = secrets.get('documentcloud_password')
 
 INSTALLED_APPS = [
     'django.contrib.admin',

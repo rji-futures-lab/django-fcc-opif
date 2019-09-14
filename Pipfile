@@ -16,6 +16,7 @@ django = "*"
 psycopg2-binary = "*"
 zappa = "*"
 django-storages = "*"
+python-documentcloud = "*"
 
 [requires]
 python_version = "3.7"

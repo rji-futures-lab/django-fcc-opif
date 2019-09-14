@@ -7,3 +7,5 @@ SERVICE_TYPES = (
     ('fm', 'FM'),
     ('tv', 'TV'),
 )
+
+DOCUMENTCLOUD_PROJECT = 45788
