@@ -30,11 +30,11 @@ class FileBase(models.Model):
             settings.DOCUMENTCLOUD_USERNAME,
             settings.DOCUMENTCLOUD_PASSWORD,
         )
-        doc = client.documents.upload(
-            self.url, self.file_name,
-            access='public', project=DOCUMENTCLOUD_PROJECT
-        )
-        self.documentcloud_id = doc.id
+        # doc = client.documents.upload(
+        #     self.url, self.file_name,
+        #     access='public', project=DOCUMENTCLOUD_PROJECT
+        # )
+        # self.documentcloud_id = doc.id
         return self.save()
 
     def refresh_from_fcc(self):
