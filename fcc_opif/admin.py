@@ -1,7 +1,7 @@
 import csv
 from django.contrib import admin
 from django.http import HttpResponse
-from .models import Facility, Folder, File
+from fcc_opif.models import Facility, FacilityFolder, FacilityFile
 
 class ExportCsvMixin:
     def export_as_csv(self, request, queryset):
@@ -123,7 +123,7 @@ class FolderAdmin(admin.ModelAdmin):
     list_filter = ('entity__call_sign', FolderParentFilter)
     search_fields = ['folder_path', 'entity_folder_id']
 
-admin.site.register(Folder, FolderAdmin)
+admin.site.register(FacilityFolder, FolderAdmin)
 
 class FileAdmin(admin.ModelAdmin, ExportCsvMixin):
 
@@ -147,6 +147,6 @@ class FileAdmin(admin.ModelAdmin, ExportCsvMixin):
     actions = ["export_as_csv"]
 
 
-admin.site.register(File, FileAdmin)
+admin.site.register(FacilityFile, FileAdmin)
 
 
