@@ -1,8 +1,10 @@
 from django.db import models
 from django.contrib.postgres.fields import JSONField
 import requests
-from fcc_opif.constants import FCC_API_URL, SERVICE_TYPES
+from fcc_opif.constants import FCC_API_URL, SERVICE_TYPES, DOCUMENTCLOUD_PROJECT
+from django.conf import settings
 from fcc_opif.utils import camelcase_to_underscore, json_cleaner
+from documentcloud import DocumentCloud
 
 
 class Facility(models.Model):
@@ -107,7 +109,87 @@ class Facility(models.Model):
         verbose_name = 'Facility'
         verbose_name_plural = "Facilities"
 
+class CableSystem(models.Model):
+    id = models.CharField(max_length=200, primary_key=True)
+
+    legal_name = models.CharField(max_length=200)
+    service_type = models.CharField(max_length=200)
+    operator_address_line1 = models.CharField(max_length=200)
+    operator_name = models.CharField(max_length=200)
+    operator_address_line2 = models.CharField(max_length=200)
+    operator_po_box = models.CharField(max_length=200)
+    operator_city = models.CharField(max_length=200)
+    operator_zipcode = models.CharField(max_length=200)
+    operator_zipcode_suffix = models.CharField(max_length=200)
+    operator_state = models.CharField(max_length=2)
+    operator_email = models.CharField(max_length=200, blank=True)
+    operator_website = models.CharField(max_length=200, blank=True)
+    operator_phone = models.CharField(max_length=200, blank=True)
+    operator_fax = models.CharField(max_length=200, blank=True)
     
+    cores_user = models.CharField(max_length=200)
+
+    principal_headend_name = models.CharField(max_length=200, blank=True)
+    principal_address_line1 = models.CharField(max_length=200, blank=True)
+    principal_address_line2 = models.CharField(max_length=200, blank=True)
+    principal_po_box = models.CharField(max_length=200, blank=True)
+    principal_city = models.CharField(max_length=200, blank=True)
+    principal_state = models.CharField(max_length=200, blank=True)
+    principal_zipcode = models.CharField(max_length=200, blank=True)
+    principal_zipcode_suffix = models.CharField(max_length=200, blank=True)
+    principal_fax = models.CharField(max_length=200, blank=True)
+    principal_phone = models.CharField(max_length=200, blank=True)
+    principal_email = models.CharField(max_length=200, blank=True)
+
+    local_file_contact_name = models.CharField(max_length=200, blank = True)
+    local_file_address_line1 = models.CharField(max_length=200, blank = True)
+    local_file_address_line2 = models.CharField(max_length=200, blank = True)
+    local_file_po_box = models.CharField(max_length=200, blank = True)
+    local_file_city = models.CharField(max_length=200, blank = True)
+    local_file_state = models.CharField(max_length=200, blank = True)
+    local_file_zipcode = models.CharField(max_length=200, blank = True)
+    local_file_zipcode_suffix = models.CharField(max_length=200, blank = True)
+    local_file_contact_fax = models.CharField(max_length=200, blank = True)
+    local_file_contact_phone = models.CharField(max_length=200, blank = True)
+    
+    active_ind = models.BooleanField()
+    prinicpal_address_in_local_files = models.BooleanField()
+    cable_service_zip_codes = models.JSONField()
+    cable_service_emp_units = models.JSONField()
+    cable_communities = models.JSONField()
+    
+    def refresh_from_fcc(self):
+        """
+        Call FCC's API to get details for the cable system.
+        """
+        psid = self.id
+        endpoint_url = f"{FCC_API_URL}/service/cable/psid/{psid}.json"
+
+        r = requests.get(endpoint_url)
+        
+        for key, value in r.json()['results']['cableSystemInfo'].items():
+            if type(value) == str:
+                if value.upper() == 'Y':
+                    value = True
+                elif value.upper() == 'N':
+                    value = False
+            setattr(self, camelcase_to_underscore(key), value)
+        
+        return self.save()
+
+    def __str__(self):
+        return self.legal_name
+
+class CableCommunity(models.Model):
+    community_unit_id = models.CharField(max_length=200, primary_key=True)
+    
+    channel = models.ForeignKey(CableChannel, related_name='communities', on_delete=models.CASCADE)
+    community_name = models.CharField(max_length=200)
+    county_name = models.CharField(max_length=200)
+
+    def __str__(self):
+        return self.community_name
+
 class Folder(models.Model):
     entity_folder_id = models.UUIDField(max_length=200, primary_key=True)
     
@@ -141,7 +223,7 @@ class Folder(models.Model):
                     value = True
                 elif value.upper() == 'N':
                     value = False
-            if key == 'subfolders' or key == 'files':
+            elif key == 'subfolders' or key == 'files':
                 pass
             else:
                 setattr(self, camelcase_to_underscore(key), value)
@@ -152,7 +234,14 @@ class Folder(models.Model):
             subfolder.refresh_from_fcc()
         for file in r.json()['folder']['files']:
             clean_file_data = json_cleaner(file)
+            last_updated = clean_file_data.pop('last_update_ts')
             file, created = self.files.update_or_create(defaults = clean_file_data, file_id = clean_file_data["file_id"])
+            if created:
+                file.upload_to_cloud()
+            elif last_updated != file.last_update_ts:
+                file.upload_to_cloud()
+                file.last_update_ts = last_updated
+                file.save()
                 
         return self.save()
 
@@ -183,7 +272,7 @@ class Folder(models.Model):
 
     def __str__(self):
         return self.folder_path
-    
+
 class File(models.Model):
     file_id = models.UUIDField(max_length=200, primary_key=True)
 
@@ -197,12 +286,19 @@ class File(models.Model):
     file_manager_id = models.CharField(max_length=200)
     moved_from = models.CharField(max_length=200, null=True)
     moved_ts = models.CharField(max_length=200, null=True)
+    documentcloud_id = models.CharField(max_length=200, null=True)
 
     @property
     def url(self):
         fileManagerID = self.file_manager_id
         folderID = self.folder.entity_folder_id
         return f"{FCC_API_URL}/manager/download/{folderID}/{fileManagerID}.pdf"
+
+    def upload_to_cloud(self):
+        client = DocumentCloud(settings.DOCUMENTCLOUD_USERNAME, settings.DOCUMENTCLOUD_PASSWORD)
+        doc = client.documents.upload(self.url, self.file_name, access='public', project=DOCUMENTCLOUD_PROJECT)
+        self.documentcloud_id = doc.id
+        return self.save()
 
     def refresh_from_fcc(self):
         """
@@ -225,9 +321,6 @@ class File(models.Model):
         
 
         return self.save()
-
-        # use this endpoint:
-        # '/file/id/{fileId}.{format}'
 
     def __str__(self):
         return self.file_name

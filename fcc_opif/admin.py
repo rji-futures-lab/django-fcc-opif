@@ -142,6 +142,7 @@ class FileAdmin(admin.ModelAdmin, ExportCsvMixin):
         'moved_from',
         'moved_ts',
         'url',
+        'documentcloud_id',
     )
     actions = ["export_as_csv"]
 
