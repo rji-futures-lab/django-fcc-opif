@@ -49,6 +49,8 @@ class Facility(models.Model):
 
         r = requests.get(endpoint_url)
 
+        r.raise_for_status()
+
         for key, value in r.json()['results']['facility'].items():
             if type(value) == str:
                 if value.upper() == 'Y':
@@ -71,6 +73,8 @@ class Facility(models.Model):
         endpoint_url = f"{FCC_API_URL}/manager/folder/parentFolders.json?entityId={entityID}&sourceService={serviceType}"  # noqa
 
         r = requests.get(endpoint_url)
+
+        r.raise_for_status()
 
         folder_list = r.json()['folders']
         for folder_data in folder_list:
