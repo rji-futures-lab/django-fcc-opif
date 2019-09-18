@@ -23,7 +23,11 @@ class FileBase(models.Model):
     moved_from = models.CharField(max_length=200, null=True)
     moved_ts = models.CharField(max_length=200, null=True)
     documentcloud_id = models.CharField(max_length=200, null=True)
-    stored_file = models.FileField(upload_to=get_upload_path, blank=True)
+    stored_file = models.FileField(
+        upload_to=get_upload_path,
+        blank=True,
+        max_length=300,
+    )
 
     @property
     def url(self):
@@ -33,7 +37,8 @@ class FileBase(models.Model):
 
     @property
     def relative_path(self):
-        return f'{self.folder.folder_path}/{self.file_name}.{self.file_extension}'  # noqa
+        path = f'{self.folder.entity}/{self.folder.folder_path}/{self.file_name}.{self.file_extension}'  # noqa
+        return path
 
     def copy_to_storage(self):
         folderID = self.folder_id
