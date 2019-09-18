@@ -1,8 +1,10 @@
+from django.conf import settings
 from django.core.files.base import ContentFile
 from django.db import models
 import requests
+from requests.exceptions import HTTPError
+from time import sleep
 from fcc_opif.constants import DOCUMENTCLOUD_PROJECT, FCC_API_URL
-from django.conf import settings
 from fcc_opif.utils import camelcase_to_underscore, json_cleaner
 from documentcloud import DocumentCloud
 
@@ -12,18 +14,41 @@ def get_upload_path(instance, file_name):
 
 
 class FileBase(models.Model):
-    file_id = models.UUIDField(max_length=200, primary_key=True)
-    file_name = models.CharField(max_length=200)
-    file_extension = models.CharField(max_length=3)
-    file_size = models.IntegerField(null=True)
-    file_status = models.CharField(max_length=200)
-    create_ts = models.CharField(max_length=200)
-    last_update_ts = models.CharField(max_length=200)
-    file_manager_id = models.CharField(max_length=200)
-    moved_from = models.CharField(max_length=200, null=True)
-    moved_ts = models.CharField(max_length=200, null=True)
-    documentcloud_id = models.CharField(max_length=200, null=True)
+    file_id = models.UUIDField(
+        editable=False, max_length=200, primary_key=True
+    )
+    file_name = models.CharField(
+        editable=False, max_length=200
+    )
+    file_extension = models.CharField(
+        editable=False, max_length=3
+    )
+    file_size = models.IntegerField(
+        editable=False, null=True
+    )
+    file_status = models.CharField(
+        editable=False, max_length=200
+    )
+    create_ts = models.CharField(
+        editable=False, max_length=200
+    )
+    last_update_ts = models.CharField(
+        editable=False, max_length=200
+    )
+    file_manager_id = models.CharField(
+        editable=False, max_length=200
+    )
+    moved_from = models.CharField(
+        editable=False, max_length=200, null=True
+    )
+    moved_ts = models.CharField(
+        editable=False, max_length=200, null=True
+    )
+    documentcloud_id = models.CharField(
+        editable=False, max_length=200, null=True
+    )
     stored_file = models.FileField(
+        editable=False,
         upload_to=get_upload_path,
         blank=True,
         max_length=300,
@@ -44,9 +69,18 @@ class FileBase(models.Model):
         folderID = self.folder_id
         fileManagerID = self.file_manager_id
         url = f"{FCC_API_URL}/manager/download/{folderID}/{fileManagerID}.pdf"
+
         r = requests.get(url)
-        r.raise_for_status()
+        try:
+            r.raise_for_status()
+        except HTTPError:
+            if len(r.history) > 0:
+                print('Redirecting...')
+                for rh in r.history:
+                    print(f'...{rh.url} to...')
+            print(f'...finally {r.url}')
         cf = ContentFile(r.content)
+
         return self.stored_file.save(self.relative_path, cf)
 
     def upload_to_document_cloud(self):
@@ -55,11 +89,12 @@ class FileBase(models.Model):
         #     settings.DOCUMENTCLOUD_USERNAME,
         #     settings.DOCUMENTCLOUD_PASSWORD,
         # )
-        # # doc = client.documents.upload(
-        # #     self.url, self.file_name,
-        # #     access='public', project=DOCUMENTCLOUD_PROJECT
-        # # )
-        # # self.documentcloud_id = doc.id
+        # doc = client.documents.upload(
+        #     self.url, self.file_name,
+        #     access='public', project=DOCUMENTCLOUD_PROJECT
+        # )
+        # sleep(2)
+        # self.documentcloud_id = doc.id
         # return self.save()
 
     def refresh_from_fcc(self):
@@ -93,26 +128,27 @@ class FileBase(models.Model):
 
 class FolderBase(models.Model):
     entity_folder_id = models.UUIDField(
-        max_length=200, primary_key=True
+        editable=False, max_length=200, primary_key=True
     )
-    folder_name = models.CharField(max_length=200)
-    folder_path = models.CharField(max_length=200)
-    allow_rename_ind = models.BooleanField()
-    allow_subfolder_ind = models.BooleanField()
-    allow_upload_ind = models.BooleanField()
-    allow_delete_ind = models.BooleanField()
+    folder_name = models.CharField(editable=False, max_length=200)
+    folder_path = models.CharField(editable=False, max_length=200)
+    allow_rename_ind = models.BooleanField(editable=False)
+    allow_subfolder_ind = models.BooleanField(editable=False)
+    allow_upload_ind = models.BooleanField(editable=False)
+    allow_delete_ind = models.BooleanField(editable=False)
     more_public_files_ind = models.BooleanField(
-        default=False
+        editable=False, default=False
     )
     parent_folder = models.ForeignKey(
         'self',
         related_name='subfolders',
         on_delete=models.CASCADE,
         null=True,
+        editable=False,
     )
-    file_count = models.IntegerField(null=True)
-    create_ts = models.CharField(max_length=200)
-    last_update_ts = models.CharField(max_length=200)
+    file_count = models.IntegerField(editable=False, null=True)
+    create_ts = models.CharField(editable=False, max_length=200)
+    last_update_ts = models.CharField(editable=False, max_length=200)
 
     def refresh_from_fcc(self):
         """
