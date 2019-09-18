@@ -1,4 +1,5 @@
 """Django settings when running project locally."""
+# flake8: noqa
 import os
 from .base import *
 

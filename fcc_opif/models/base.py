@@ -145,7 +145,7 @@ class FolderBase(models.Model):
                 defaults=clean_file_data,
                 file_id=clean_file_data["file_id"]
             )
-            
+
             fcc_updated = last_updated != file.last_update_ts
             if created or fcc_updated:
                 file.copy_to_storage()
