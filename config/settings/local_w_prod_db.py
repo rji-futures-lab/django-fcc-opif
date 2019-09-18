@@ -1,5 +1,6 @@
 """Django settings when serving locally with prod database."""
-from .prod import * # noqa
+# flake8: noqa
+from .prod import *
 
 DEBUG = True
 

@@ -1,4 +1,5 @@
 """Django settings when running project in any environment."""
+# flake8: noqa
 import os
 import configparser
 
