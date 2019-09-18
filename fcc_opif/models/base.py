@@ -1,9 +1,14 @@
+from django.core.files.base import ContentFile
 from django.db import models
 import requests
 from fcc_opif.constants import DOCUMENTCLOUD_PROJECT, FCC_API_URL
 from django.conf import settings
 from fcc_opif.utils import camelcase_to_underscore, json_cleaner
 from documentcloud import DocumentCloud
+
+
+def get_upload_path(instance, file_name):
+    return f'fcc_files/{instance.relative_path}'
 
 
 class FileBase(models.Model):
@@ -18,6 +23,7 @@ class FileBase(models.Model):
     moved_from = models.CharField(max_length=200, null=True)
     moved_ts = models.CharField(max_length=200, null=True)
     documentcloud_id = models.CharField(max_length=200, null=True)
+    stored_file = models.FileField(upload_to=get_upload_path, blank=True)
 
     @property
     def url(self):
@@ -25,17 +31,31 @@ class FileBase(models.Model):
         folderID = self.folder.entity_folder_id
         return f"{FCC_API_URL}/manager/download/{folderID}/{fileManagerID}.pdf"
 
-    def upload_to_cloud(self):
-        client = DocumentCloud(
-            settings.DOCUMENTCLOUD_USERNAME,
-            settings.DOCUMENTCLOUD_PASSWORD,
-        )
-        # doc = client.documents.upload(
-        #     self.url, self.file_name,
-        #     access='public', project=DOCUMENTCLOUD_PROJECT
+    @property
+    def relative_path(self):
+        return f'{self.folder.folder_path}/{self.file_name}.{self.file_extension}'  # noqa
+
+    def copy_to_storage(self):
+        folderID = self.folder_id
+        fileManagerID = self.file_manager_id
+        url = f"{FCC_API_URL}/manager/download/{folderID}/{fileManagerID}.pdf"
+        r = requests.get(url)
+        r.raise_for_status()
+        cf = ContentFile(r.content)
+        return self.stored_file.save(self.relative_path, cf)
+
+    def upload_to_document_cloud(self):
+        pass
+        # client = DocumentCloud(
+        #     settings.DOCUMENTCLOUD_USERNAME,
+        #     settings.DOCUMENTCLOUD_PASSWORD,
         # )
-        # self.documentcloud_id = doc.id
-        return self.save()
+        # # doc = client.documents.upload(
+        # #     self.url, self.file_name,
+        # #     access='public', project=DOCUMENTCLOUD_PROJECT
+        # # )
+        # # self.documentcloud_id = doc.id
+        # return self.save()
 
     def refresh_from_fcc(self):
         """
@@ -125,12 +145,14 @@ class FolderBase(models.Model):
                 defaults=clean_file_data,
                 file_id=clean_file_data["file_id"]
             )
-            if created:
-                file.upload_to_cloud()
-            elif last_updated != file.last_update_ts:
-                file.upload_to_cloud()
-                file.last_update_ts = last_updated
-                file.save()
+            
+            fcc_updated = last_updated != file.last_update_ts
+            if created or fcc_updated:
+                file.copy_to_storage()
+                file.upload_to_document_cloud()
+                if fcc_updated:
+                    file.last_update_ts = last_updated
+                    file.save()
 
         return self.save()
 

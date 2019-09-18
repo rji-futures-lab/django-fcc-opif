@@ -109,3 +109,4 @@ cache.sqlite
 secrets.cfg
 
 zappa_settings.json
+media/

@@ -30,7 +30,7 @@ LOGGING = {
             'handlers': ['console'],
             'level': 'INFO',
         },
-        'tweets2text.management': {
+        'fcc_opif.management': {
             'handlers': ['console'],
             'level': 'DEBUG',
             'propagate': True,
@@ -41,7 +41,8 @@ LOGGING = {
 STATIC_ROOT = 'static/'
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [
-    os.path.join(ROOT_DIR, 'tweets2text', 'static'),
+    os.path.join(ROOT_DIR, 'fcc_opif', 'static'),
 ]
 
 DEFAULT_FILE_STORAGE = 'django.core.files.storage.FileSystemStorage'
+MEDIA_ROOT = 'media'
