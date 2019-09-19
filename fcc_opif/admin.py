@@ -168,7 +168,6 @@ class FacilityAdmin(admin.ModelAdmin):
         return False
 
 
-
 admin.site.register(Facility, FacilityAdmin)
 
 
@@ -249,7 +248,6 @@ class FileAdmin(admin.ModelAdmin, ExportCsvMixin):
 
     def has_delete_permission(self, request, obj=None):
         return False
-
 
 
 admin.site.register(FacilityFile, FileAdmin)

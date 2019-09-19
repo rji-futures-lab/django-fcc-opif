@@ -85,7 +85,6 @@ class FileBase(models.Model):
 
         return
 
-
     def upload_to_document_cloud(self):
         pass
         # client = DocumentCloud(

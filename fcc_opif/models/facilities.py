@@ -11,18 +11,26 @@ class Facility(models.Model):
 
     call_sign = models.CharField(editable=False, max_length=200)
     service = models.CharField(editable=False, max_length=200)
-    service_type = models.CharField(editable=False, max_length=2, choices=SERVICE_TYPES)
+    service_type = models.CharField(
+        editable=False, max_length=2, choices=SERVICE_TYPES
+    )
     rf_channel = models.IntegerField(editable=False)
     virtual_channel = models.IntegerField(editable=False)
     license_expiration_date = models.CharField(editable=False, max_length=10)
     status_date = models.CharField(editable=False, max_length=10)
     status = models.CharField(editable=False, max_length=200)
     community_city = models.CharField(editable=False, max_length=200)
-    community_state = models.CharField(editable=False, max_length=2)  # all states abbreviated?
+    community_state = models.CharField(
+        editable=False, max_length=2
+    )  # all states abbreviated?
     facility_type = models.CharField(editable=False, max_length=200)
-    frequency = models.DecimalField(editable=False, max_digits=4, decimal_places=1)  # ??
+    frequency = models.DecimalField(
+        editable=False, max_digits=4, decimal_places=1
+    )  # ??
     active_ind = models.BooleanField(editable=False, )
-    scanned_letter_ids = models.CharField(editable=False, max_length=200, blank=True)
+    scanned_letter_ids = models.CharField(
+        editable=False, max_length=200, blank=True
+    )
     party_name = models.CharField(editable=False, max_length=200)
     party_address1 = models.CharField(editable=False, max_length=200)
     party_address2 = models.CharField(editable=False, max_length=200)
