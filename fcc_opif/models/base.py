@@ -75,13 +75,16 @@ class FileBase(models.Model):
             r.raise_for_status()
         except HTTPError:
             if len(r.history) > 0:
-                print('Redirecting...')
+                print('  Redirecting...')
                 for rh in r.history:
-                    print(f'...{rh.url} to...')
-            print(f'...finally {r.url}')
-        cf = ContentFile(r.content)
+                    print(f'    ...{rh.url} to...')
+            print(f'   ...and finally {r.url}')
+        else:
+            cf = ContentFile(r.content)
+            self.stored_file.save(self.relative_path, cf)
 
-        return self.stored_file.save(self.relative_path, cf)
+        return
+
 
     def upload_to_document_cloud(self):
         pass
