@@ -36,8 +36,6 @@ class Command(BaseCommand):
         else:
             msg = self.style.SUCCESS(f"{facility} was updated.")
 
-        print(facility_id)
-
         facility.refresh_from_fcc()
         self.stdout.write(msg)
         facility.refresh_all_files()
