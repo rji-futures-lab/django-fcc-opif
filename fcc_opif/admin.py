@@ -127,6 +127,46 @@ class FacilityAdmin(admin.ModelAdmin):
 
     list_filter = ('service_type', FacilityStateFilter, FacilityCityFilter)
     search_fields = ['call_sign']
+    readonly_fields = (
+        'id',
+        'call_sign',
+        'service',
+        'service_type',
+        'rf_channel',
+        'virtual_channel',
+        'license_expiration_date',
+        'status_date',
+        'status',
+        'community_city',
+        'community_state',
+        'facility_type',
+        'frequency',
+        'active_ind',
+        'scanned_letter_ids',
+        'party_name',
+        'party_address1',
+        'party_address2',
+        'party_city',
+        'party_zip1',
+        'party_zip2',
+        'party_state',
+        'party_phone',
+        'nielsen_dma',
+        'network_afil',
+        'band',
+        'auth_app_id',
+        'post_card_id',
+    )
+
+    def has_add_permission(self, request, obj=None):
+        return False
+
+    def has_change_permission(self, request, obj=None):
+        return False
+
+    def has_delete_permission(self, request, obj=None):
+        return False
+
 
 
 admin.site.register(Facility, FacilityAdmin)
@@ -136,6 +176,29 @@ class FolderAdmin(admin.ModelAdmin):
 
     list_filter = ('entity__call_sign', FolderParentFilter)
     search_fields = ['folder_path', 'entity_folder_id']
+    readonly_fields = (
+        'entity_folder_id',
+        'folder_name',
+        'folder_path',
+        'allow_rename_ind',
+        'allow_subfolder_ind',
+        'allow_upload_ind',
+        'allow_delete_ind',
+        'more_public_files_ind',
+        'parent_folder',
+        'file_count',
+        'create_ts',
+        'last_update_ts',
+    )
+
+    def has_add_permission(self, request, obj=None):
+        return False
+
+    def has_change_permission(self, request, obj=None):
+        return False
+
+    def has_delete_permission(self, request, obj=None):
+        return False
 
 
 admin.site.register(FacilityFolder, FolderAdmin)
@@ -162,7 +225,31 @@ class FileAdmin(admin.ModelAdmin, ExportCsvMixin):
         'url',
         'documentcloud_id',
     )
+    readonly_fields = (
+        'file_id',
+        'file_name',
+        'file_extension',
+        'file_size',
+        'file_status',
+        'create_ts',
+        'last_update_ts',
+        'file_manager_id',
+        'moved_from',
+        'moved_ts',
+        'documentcloud_id',
+        'stored_file',
+    )
     actions = ["export_as_csv"]
+
+    def has_add_permission(self, request, obj=None):
+        return False
+
+    def has_change_permission(self, request, obj=None):
+        return False
+
+    def has_delete_permission(self, request, obj=None):
+        return False
+
 
 
 admin.site.register(FacilityFile, FileAdmin)
