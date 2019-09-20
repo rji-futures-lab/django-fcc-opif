@@ -205,7 +205,7 @@ admin.site.register(FacilityFolder, FolderAdmin)
 
 class FileAdmin(admin.ModelAdmin, ExportCsvMixin):
 
-    list_filter = ('file_name',)
+    list_filter = ('folder__entity__call_sign',)
     search_fields = [
         'file_name', 'folder__entity_folder_id', 'folder__folder_path'
     ]
