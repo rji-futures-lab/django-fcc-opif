@@ -126,6 +126,9 @@ class FileBase(models.Model):
 
     class Meta:
         abstract = True
+        indexes = [
+            models.Index(fields=['file_name']),
+        ]
 
 
 class FolderBase(models.Model):
@@ -206,3 +209,6 @@ class FolderBase(models.Model):
 
     class Meta:
         abstract = True
+        indexes = [
+            models.Index(fields=['folder_path']),
+        ]

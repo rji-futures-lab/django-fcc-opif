@@ -127,6 +127,17 @@ class FacilityAdmin(admin.ModelAdmin):
 
     list_filter = ('service_type', FacilityStateFilter, FacilityCityFilter)
     search_fields = ['call_sign']
+    list_display = (
+        'call_sign',
+        'service_type',
+        'community_city',
+        'community_state',
+        'facility_type',
+        'party_name',
+        'party_city',
+        'party_state',
+        'network_afil',
+    )
     readonly_fields = (
         'id',
         'call_sign',
@@ -157,6 +168,7 @@ class FacilityAdmin(admin.ModelAdmin):
         'auth_app_id',
         'post_card_id',
     )
+    ordering = ('service_type', 'call_sign',)
 
     def has_add_permission(self, request, obj=None):
         return False
@@ -175,6 +187,15 @@ class FolderAdmin(admin.ModelAdmin):
 
     list_filter = ('entity__call_sign', FolderParentFilter)
     search_fields = ['folder_path', 'entity_folder_id']
+    list_display = (
+        'entity', 
+        'folder_path',
+        'entity_folder_id',
+        'file_count',
+        'create_ts',
+        'last_update_ts',
+    )
+    list_display_links = ('folder_path',)
     readonly_fields = (
         'entity_folder_id',
         'folder_name',
@@ -198,6 +219,7 @@ class FolderAdmin(admin.ModelAdmin):
 
     def has_delete_permission(self, request, obj=None):
         return False
+    ordering = ('entity', 'folder_path',)
 
 
 admin.site.register(FacilityFolder, FolderAdmin)
@@ -210,9 +232,10 @@ class FileAdmin(admin.ModelAdmin, ExportCsvMixin):
         'file_name', 'folder__entity_folder_id', 'folder__folder_path'
     ]
     list_display = (
-        'file_id',
-        'folder',
+        # 'folder__entity',
         'file_name',
+        'folder',
+        'file_id',
         'file_extension',
         'file_size',
         'file_status',
@@ -224,6 +247,7 @@ class FileAdmin(admin.ModelAdmin, ExportCsvMixin):
         'url',
         'documentcloud_id',
     )
+    list_display_links = ('file_name',)
     readonly_fields = (
         'file_id',
         'file_name',
@@ -239,6 +263,7 @@ class FileAdmin(admin.ModelAdmin, ExportCsvMixin):
         'stored_file',
     )
     actions = ["export_as_csv"]
+    ordering = ('folder', 'file_name')
 
     def has_add_permission(self, request, obj=None):
         return False

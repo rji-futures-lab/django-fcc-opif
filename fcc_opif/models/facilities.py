@@ -105,6 +105,9 @@ class Facility(models.Model):
     class Meta:
         verbose_name = 'Facility'
         verbose_name_plural = "Facilities"
+        indexes = [
+            models.Index(fields=['service_type', 'call_sign']),
+        ]
 
 
 class FacilityFile(FileBase):
