@@ -21,7 +21,7 @@ class FileBase(models.Model):
         editable=False, max_length=200
     )
     file_extension = models.CharField(
-        editable=False, max_length=3
+        editable=False, max_length=10
     )
     file_size = models.IntegerField(
         editable=False, null=True
@@ -126,6 +126,9 @@ class FileBase(models.Model):
 
     class Meta:
         abstract = True
+        indexes = [
+            models.Index(fields=['file_name']),
+        ]
 
 
 class FolderBase(models.Model):
@@ -180,7 +183,9 @@ class FolderBase(models.Model):
                 defaults=clean_subfolder_data,
                 entity_folder_id=clean_subfolder_data["entity_folder_id"]
             )
+            
             subfolder.refresh_from_fcc()
+
         for file in r.json()['folder']['files']:
             clean_file_data = json_cleaner(file)
             last_updated = clean_file_data.pop('last_update_ts')
@@ -204,3 +209,6 @@ class FolderBase(models.Model):
 
     class Meta:
         abstract = True
+        indexes = [
+            models.Index(fields=['folder_path']),
+        ]
