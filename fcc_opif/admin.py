@@ -232,7 +232,7 @@ class FileAdmin(admin.ModelAdmin, ExportCsvMixin):
         'file_name', 'folder__entity_folder_id', 'folder__folder_path'
     ]
     list_display = (
-        # 'folder__entity',
+        'get_entity',
         'file_name',
         'folder',
         'file_id',
@@ -263,7 +263,13 @@ class FileAdmin(admin.ModelAdmin, ExportCsvMixin):
         'stored_file',
     )
     actions = ["export_as_csv"]
-    ordering = ('folder', 'file_name')
+    ordering = ('folder__entity', 'folder', 'file_name')
+
+    def get_entity(self, obj):
+        return obj.folder.entity
+    
+    get_entity.short_description = 'Facility'
+    get_entity.admin_order_field = 'folder__entity'
 
     def has_add_permission(self, request, obj=None):
         return False
