@@ -2,6 +2,7 @@ from django.contrib.postgres.fields import JSONField
 from django.db import models
 import requests
 from fcc_opif.constants import FCC_API_URL, SERVICE_TYPES
+from fcc_opif.handlers import refresh_folder
 from fcc_opif.utils import camelcase_to_underscore, json_cleaner
 from .base import FileBase, FolderBase
 
@@ -14,8 +15,8 @@ class Facility(models.Model):
     service_type = models.CharField(
         editable=False, max_length=2, choices=SERVICE_TYPES
     )
-    rf_channel = models.IntegerField(editable=False)
-    virtual_channel = models.IntegerField(editable=False)
+    rf_channel = models.IntegerField(editable=False, null=True)
+    virtual_channel = models.IntegerField(editable=False, null=True)
     license_expiration_date = models.CharField(editable=False, max_length=10)
     status_date = models.CharField(editable=False, max_length=10)
     status = models.CharField(editable=False, max_length=200)
@@ -25,8 +26,8 @@ class Facility(models.Model):
     )  # all states abbreviated?
     facility_type = models.CharField(editable=False, max_length=200)
     frequency = models.DecimalField(
-        editable=False, max_digits=4, decimal_places=1
-    )  # ??
+        editable=False, max_digits=5, decimal_places=1
+    )
     active_ind = models.BooleanField(editable=False, )
     scanned_letter_ids = models.CharField(
         editable=False, max_length=200, blank=True
@@ -45,7 +46,7 @@ class Facility(models.Model):
     auth_app_id = models.CharField(editable=False, max_length=7)
     post_card_id = models.CharField(editable=False, max_length=7)
     main_studio_contact = JSONField(editable=False)
-    cc_contact = JSONField(editable=False)
+    cc_contact = JSONField(editable=False, blank=True, null=True)
 
     def refresh_from_fcc(self):
         """
@@ -65,6 +66,8 @@ class Facility(models.Model):
                     value = True
                 elif value.upper() == 'N':
                     value = False
+                elif 'channel' in key.lower() and value == '':
+                    value = None
             setattr(self, camelcase_to_underscore(key), value)
 
         return self.save()
@@ -88,8 +91,11 @@ class Facility(models.Model):
         for folder_data in folder_list:
             clean_data = json_cleaner(folder_data)
             clean_data['entity_id'] = self.id
-            folder, created = self.folders.update_or_create(defaults = clean_data, entity_folder_id = clean_data["entity_folder_id"])  # noqa
-            folder.refresh_from_fcc()
+            folder, created = self.folders.update_or_create(
+                defaults=clean_data,
+                entity_folder_id=clean_data["entity_folder_id"],
+            )
+            refresh_folder('FacilityFolder', folder.entity_folder_id)
 
         return self.save()
 
