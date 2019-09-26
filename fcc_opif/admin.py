@@ -16,10 +16,18 @@ class ExportCsvMixin:
         writer = csv.writer(response)
 
         writer.writerow(field_names)
+
         for obj in queryset:
-            writer.writerow(
-                [getattr(obj, field) for field in field_names]
-            )
+            row = []
+            for field in field_names:
+                if '__' in field:
+                    parts = field.split('__')
+                    row.append(getattr(getattr(obj, parts[0]), parts[1]))
+                elif callable(getattr(obj, field)):
+                    row.append(getattr(obj, field)())
+                else:
+                    row.append(getattr(obj, field))
+            writer.writerow(row)
 
         return response
 
@@ -232,7 +240,7 @@ class FileAdmin(admin.ModelAdmin, ExportCsvMixin):
         'file_name', 'folder__entity_folder_id', 'folder__folder_path'
     ]
     list_display = (
-        'get_entity',
+        'folder__entity',
         'file_name',
         'folder',
         'file_id',
@@ -264,12 +272,13 @@ class FileAdmin(admin.ModelAdmin, ExportCsvMixin):
     )
     actions = ["export_as_csv"]
     ordering = ('folder__entity', 'folder', 'file_name')
+    list_select_related = ('folder__entity', )
 
-    def get_entity(self, obj):
+    def folder__entity(self, obj):
         return obj.folder.entity
     
-    get_entity.short_description = 'Facility'
-    get_entity.admin_order_field = 'folder__entity'
+    folder__entity.short_description = 'Facility'
+    folder__entity.admin_order_field = 'folder__entity'
 
     def has_add_permission(self, request, obj=None):
         return False
