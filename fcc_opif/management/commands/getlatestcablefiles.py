@@ -1,4 +1,4 @@
-'''Find a facility and get it's latest file data
+'''Find a facility and get it's latest file data'''
 import re
 from django.core.management.base import BaseCommand, CommandError
 import requests
@@ -9,38 +9,33 @@ from fcc_opif.models import CableSystem
 
 class Command(BaseCommand):
 
-    help = "Find a cable system and get it's latest file data."
+    help = "Find a cable system and get its latest file data."
 
     def add_arguments(self, parser):
         parser.add_argument('id')
-        #parser.add_argument('service_type', choices=['am', 'fm', 'tv'])
 
     def handle(self, *args, **options):
-        self.legal_name = options['call_sign'].upper()
+        self.id = options['id'].upper()
         self.service_type = 'cable'
-
+        
+        '''
         cable_system_list = self.get_all_cable_systems()
 
         cable_system_id = self.get_cable_system_id(cable_system_list)
+        '''
 
-        try:
-            cable_system = CableSystem.objects.get(id=psid)
-        except CableSystem.DoesNotExist:
-            cable_system = CableSystem(
-                id=psid,
-                #call_sign=self.call_sign,
-                #service_type=self.service_type.lower(),
-            )
-            msg = self.style.SUCCESS(f"{cable_system} was created.")
+        cable_system, created = CableSystem.objects.get_or_create(id=self.id)
+        if created:
+            msg = self.style.SUCCESS(f"{cable_system.id} was created.")
         else:
-            msg = self.style.SUCCESS(f"{cable_system} was updated.")
+            msg = self.style.SUCCESS(f"{cable_system.id} was updated.")
 
-        print(psid)
+        print(self.id)
 
         cable_system.refresh_from_fcc()
         self.stdout.write(msg)
-        #cable_system.refresh_all_files()
-
+        cable_system.refresh_all_files()
+'''
     def get_all_cable_systems(self):
         url = f"{FCC_API_URL}/service/cable/getall.json"
         r = requests.get(url)
@@ -53,18 +48,16 @@ class Command(BaseCommand):
 
     def get_cable_system_id(self, cable_system_list):
         cable_system_id_lookup_dict = {
-            f['psid'] for f in cable_system_list
+            f['psid']: f['psid'] for f in cable_system_list
         }
 
-        #full_call_sign = f"{self.legal_name}-{self.service_type}"
+        psid = self.id
 
-        if self.id in facility_id_lookup_dict:
-            cable_system_id = cable_system_id_lookup_dict[self.id]
-        elif full_call_sign in facility_id_lookup_dict:
-            facility_id = facility_id_lookup_dict[full_call_sign]
+        if psid in cable_system_id_lookup_dict:
+            cable_system_id = cable_system_id_lookup_dict[psid]
         else:
             raise CommandError(
-                f"{self.id} not found in cable facilities."
+                f"{self.id} not found in cable systems."
             )
 
         return cable_system_id
