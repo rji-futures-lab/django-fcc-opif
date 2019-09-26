@@ -9,7 +9,6 @@ flake8 = "*"
 ipdb = "*"
 
 [packages]
-jupyter = "*"
 requests = "*"
 requests-cache = "*"
 django = "*"
