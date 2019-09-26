@@ -78,7 +78,7 @@ class FileBase(models.Model):
                 print('  Redirecting...')
                 for rh in r.history:
                     print(f'    ...{rh.url} to...')
-                print(f'   ...and finally {r.url}')
+                print(f'    ...and finally {r.url}')
             else:
                 print(e)
         else:
