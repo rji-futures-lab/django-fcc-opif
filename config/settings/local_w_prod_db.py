@@ -37,7 +37,7 @@ LOGGING = {
             'handlers': ['console'],
             'level': 'INFO',
         },
-        'tweets2text.management': {
+        'fcc_opif.management': {
             'handlers': ['console'],
             'level': 'DEBUG',
             'propagate': True,
