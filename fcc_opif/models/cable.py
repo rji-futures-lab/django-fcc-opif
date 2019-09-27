@@ -120,11 +120,7 @@ class CableSystem(models.Model):
         psid = self.id
         endpoint_url = f"{FCC_API_URL}/service/cable/psid/{psid}.json"
 
-        print(psid)
-
         r = requests.get(endpoint_url)
-
-        print(r.json())
 
         for key, value in r.json()['results']['cableSystemInfo'].items():
             if key == 'cableServiceZipCodes' or key == 'cableServiceEmpUnits' or key == 'cableCommunities':

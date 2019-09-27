@@ -73,12 +73,14 @@ class FileBase(models.Model):
         r = requests.get(url)
         try:
             r.raise_for_status()
-        except HTTPError:
+        except HTTPError as e:
             if len(r.history) > 0:
                 print('  Redirecting...')
                 for rh in r.history:
                     print(f'    ...{rh.url} to...')
-            print(f'   ...and finally {r.url}')
+                print(f'    ...and finally {r.url}')
+            else:
+                print(e)
         else:
             cf = ContentFile(r.content)
             self.stored_file.save(self.relative_path, cf)
@@ -195,12 +197,15 @@ class FolderBase(models.Model):
             )
 
             fcc_updated = last_updated != file.last_update_ts
-            if created or fcc_updated:
+
+            file_needed = created or fcc_updated or not file.stored_file
+
+            if file_needed:
                 file.copy_to_storage()
                 file.upload_to_document_cloud()
-                if fcc_updated:
-                    file.last_update_ts = last_updated
-                    file.save()
+            if fcc_updated:
+                file.last_update_ts = last_updated
+                file.save()
 
         return self.save()
 

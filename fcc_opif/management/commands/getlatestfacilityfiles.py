@@ -1,4 +1,4 @@
-'''Find a facility and get it's latest file data'''
+'''Find a facility and get its latest file data'''
 from django.core.management.base import BaseCommand, CommandError
 import requests
 from requests.exceptions import HTTPError
@@ -8,7 +8,7 @@ from fcc_opif.models import Facility
 
 class Command(BaseCommand):
 
-    help = "Find a facility and get it's latest file data."
+    help = "Find a facility and get its latest file data."
 
     def add_arguments(self, parser):
         parser.add_argument('call_sign')

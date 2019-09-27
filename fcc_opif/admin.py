@@ -218,10 +218,9 @@ admin.site.register(CableFolder, FolderAdmin)
 
 class FileAdmin(admin.ModelAdmin, ExportCsvMixin):
 
-    list_filter = ('folder__entity__call_sign',)
-    search_fields = [
-        'file_name', 'folder__entity_folder_id', 'folder__folder_path'
-    ]
+    search_fields = (
+        'file_name', 'folder__entity_folder_id', 'folder__folder_path',
+    )
     list_display = (
         'folder__entity',
         'file_name',
@@ -260,7 +259,7 @@ class FileAdmin(admin.ModelAdmin, ExportCsvMixin):
     def folder__entity(self, obj):
         return obj.folder.entity
     
-    folder__entity.short_description = 'Facility'
+    folder__entity.short_description = 'Entity'
     folder__entity.admin_order_field = 'folder__entity'
 
     def has_add_permission(self, request, obj=None):
