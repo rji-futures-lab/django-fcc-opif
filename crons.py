@@ -1,5 +1,6 @@
 from zappa.asynchronous import task
-
+from django.core.management import call_command
+from django.core.management.base import CommandError
 
 facilities = (
     # tv
@@ -60,14 +61,25 @@ facilities = (
     ('krfl', 'fm'),
 )
 
+cable_systems = (
+    '007195',
+)
+
 
 @task()
 def update_facility(call_sign, service_type):
-    from django.core.management import call_command
-    from django.core.management.base import CommandError
     try:
         call_command(
             'getlatestfacilityfiles', call_sign, service_type
+        )
+    except CommandError as e:
+        print(e)
+
+@task()
+def update_cable_system(id):
+    try:
+        call_command(
+            'getlatestcablefiles', id
         )
     except CommandError as e:
         print(e)
@@ -78,3 +90,8 @@ def main():
         update_facility(*facility)
     num_facilities = len(facilities)
     print(f'Initialized update for all {num_facilities} facilities.')
+
+    for cable_system in cable_systems:
+        update_facility(cable_system)
+    num_cable_systems = len(cable_systems)
+    print(f'Initialized update for all {num_cable_systems} facilities.')
