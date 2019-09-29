@@ -162,7 +162,7 @@ class CableSystem(models.Model):
             clean_data = json_cleaner(folder_data)
             clean_data['entity_id'] = self.id
             folder, created = self.folders.update_or_create(defaults = clean_data, entity_folder_id = clean_data["entity_folder_id"])  # noqa
-            folder.refresh_from_fcc()
+            refresh_folder('CableFolder', folder.entity_folder_id)
 
         return self.save()
 
