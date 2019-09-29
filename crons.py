@@ -92,6 +92,6 @@ def main():
     print(f'Initialized update for all {num_facilities} facilities.')
 
     for cable_system in cable_systems:
-        update_facility(cable_system)
+        update_cable_system(cable_system)
     num_cable_systems = len(cable_systems)
-    print(f'Initialized update for all {num_cable_systems} facilities.')
+    print(f'Initialized update for all {num_cable_systems} cable systems.')
