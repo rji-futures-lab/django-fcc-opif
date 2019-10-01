@@ -4,7 +4,7 @@ import requests
 from fcc_opif.constants import FCC_API_URL, SERVICE_TYPES
 from fcc_opif.handlers import refresh_folder
 from fcc_opif.utils import camelcase_to_underscore, json_cleaner
-from .base import FileBase, FolderBase
+from .base import FileBase, FolderBase, MissingFileManager
 
 
 class Facility(models.Model):
@@ -47,6 +47,25 @@ class Facility(models.Model):
     post_card_id = models.CharField(editable=False, max_length=7)
     main_studio_contact = JSONField(editable=False)
     cc_contact = JSONField(editable=False, blank=True, null=True)
+    _actual_file_count = models.IntegerField(editable=False, null=True, db_column="actual_file_count")
+    _expected_file_count = models.IntegerField(editable=False, null=True, db_column="expected_file_count")
+    has_missing_files = models.BooleanField(default=False)
+
+    @property
+    def actual_file_count(self):
+        return self._actual_file_count
+
+    @actual_file_count.setter
+    def actual_file_count(self, value):
+        self._actual_file_count = value
+
+    @property
+    def expected_file_count(self):
+        return self._expected_file_count
+
+    @expected_file_count.setter
+    def expected_file_count(self, value):
+        self._expected_file_count = value
 
     def refresh_from_fcc(self):
         """
@@ -78,6 +97,8 @@ class Facility(models.Model):
 
         Create new folders and files, update existing ones.
         """
+        self.actual_file_count = 0
+        self.expected_file_count = 0
 
         serviceType = self.service_type
         entityID = self.id
@@ -95,7 +116,17 @@ class Facility(models.Model):
                 defaults=clean_data,
                 entity_folder_id=clean_data["entity_folder_id"],
             )
+            folder._actual_file_count = 0
             refresh_folder('FacilityFolder', folder.entity_folder_id)
+            
+            self.actual_file_count += folder._actual_file_count
+            self.expected_file_count += int(folder.file_count)
+            if self.actual_file_count == self.expected_file_count:
+                setattr(self, 'has_missing_files', False)
+            else:
+                setattr(self, 'has_missing_files', True)
+
+            self.save()
 
         return self.save()
 
@@ -118,6 +149,7 @@ class FacilityFile(FileBase):
         db_column='folder_id',
         editable=False,
     )
+    #missing_files = MissingFileManager()
 
 
 class FacilityFolder(FolderBase):

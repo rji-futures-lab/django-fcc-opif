@@ -117,11 +117,13 @@ class CommunityCableSystemFilter(InputFilter):
 
 class FacilityAdmin(admin.ModelAdmin):
 
-    list_filter = ('service_type', FacilityStateFilter, FacilityCityFilter)
+    list_filter = ('service_type', FacilityStateFilter, FacilityCityFilter, 'has_missing_files')
     search_fields = ['call_sign']
     list_display = (
         'call_sign',
         'service_type',
+        '_actual_file_count',
+        'has_missing_files',
         'community_city',
         'community_state',
         'facility_type',
@@ -183,6 +185,7 @@ class FolderAdmin(admin.ModelAdmin):
         'folder_path',
         'entity_folder_id',
         'file_count',
+        'actual_file_count',
         'create_ts',
         'last_update_ts',
     )
@@ -221,9 +224,11 @@ class FileAdmin(admin.ModelAdmin, ExportCsvMixin):
     search_fields = (
         'file_name', 'folder__entity_folder_id', 'folder__folder_path',
     )
+    list_filter = ('missing_stored_file',)
     list_display = (
         'folder__entity',
         'file_name',
+        'missing_stored_file',
         'folder',
         'file_id',
         'file_extension',
@@ -277,10 +282,20 @@ admin.site.register(CableFile, FileAdmin)
 class CableSystemAdmin(admin.ModelAdmin):
 
     search_fields = ('legal_name',)
+    list_filter = ('has_missing_files',)
+    list_display = (
+        'id',
+        'legal_name',
+        'service_type',
+        '_actual_file_count',
+        'has_missing_files',
+    )
     readonly_fields = (
         "id",
         "legal_name",
         "service_type",
+        "_actual_file_count",
+        "has_missing_files",
         "operator_address_line1",
         "operator_name",
         "operator_address_line2",
