@@ -188,7 +188,7 @@ class CableSystem(models.Model):
             clean_data['entity_id'] = self.id
             folder, created = self.folders.update_or_create(defaults = clean_data, entity_folder_id = clean_data["entity_folder_id"])  # noqa
             refresh_folder('CableFolder', folder.entity_folder_id)
-            print(folder._actual_file_count)
+            #print(folder._actual_file_count)
 
             self.actual_file_count += folder._actual_file_count
             self.expected_file_count += int(folder.file_count)

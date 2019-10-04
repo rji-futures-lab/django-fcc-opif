@@ -7,7 +7,9 @@ from time import sleep
 from fcc_opif.constants import DOCUMENTCLOUD_PROJECT, FCC_API_URL
 from fcc_opif.utils import camelcase_to_underscore, json_cleaner
 from documentcloud import DocumentCloud
+import logging
 
+logger=logging.getLogger(__name__)
 
 def get_upload_path(instance, file_name):
     return f'fcc_files/{instance.relative_path}'
@@ -81,14 +83,18 @@ class FileBase(models.Model):
             r.raise_for_status()
         except HTTPError as e:
             if len(r.history) > 0:
-                print('  Redirecting...')
+                #print('  Redirecting...')
+                logger.debug('  Redirecting...')
                 for rh in r.history:
-                    print(f'    ...{rh.url} to...')
-                print(f'    ...and finally {r.url}')
+                    #print(f'    ...{rh.url} to...')
+                    logger.debug(f'    ...{rh.url} to...')
+                #print(f'    ...and finally {r.url}')
+                logger.debug(f'    ...and finally {r.url}')
             else:
                 print(e)
         else:
             cf = ContentFile(r.content)
+            logger.debug(f'{self.file_name} successfully stored')
             self.stored_file.save(self.relative_path, cf)
 
         return
@@ -159,10 +165,10 @@ class FolderBase(models.Model):
         editable=False,
     )
     file_count = models.IntegerField(editable=False, null=True)
-    _actual_file_count = models.IntegerField(editable=False, null=True, db_column="actual_file_count")
+    _actual_file_count = models.IntegerField(editable=False, null=True, db_column="actual_file_count", default=0)
     create_ts = models.CharField(editable=False, max_length=200)
     last_update_ts = models.CharField(editable=False, max_length=200)
-    
+
     @property
     def actual_file_count(self):
         return self._actual_file_count

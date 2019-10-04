@@ -1,6 +1,7 @@
 """Django settings when serving locally with prod database."""
 # flake8: noqa
 from .prod import *
+from boto3.session import Session
 
 DEBUG = True
 
@@ -31,14 +32,21 @@ LOGGING = {
         'console': {
             'class': 'logging.StreamHandler',
         },
+        'watchtower': {
+            'level': 'DEBUG',
+            'class': 'watchtower.CloudWatchLogHandler',
+                     'boto3_session': boto3_session,
+                     'log_group': 'MyLogGroupName',
+                     'stream_name': 'MyStreamName',
+        },    
     },
     'loggers': {
         'django': {
-            'handlers': ['console'],
+            'handlers': ['console', 'watchtower'],
             'level': 'INFO',
         },
         'fcc_opif.management': {
-            'handlers': ['console'],
+            'handlers': ['console', 'watchtower'],
             'level': 'DEBUG',
             'propagate': True,
         },

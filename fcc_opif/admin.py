@@ -45,17 +45,13 @@ class InputFilter(admin.SimpleListFilter):
         yield all_choice
 
 
-class FacilityStateFilter(InputFilter):
-    parameter_name = 'community_state'
-    title = ('State')
-
-    def queryset(self, request, queryset):
-        if self.value() is not None:
-            uid = self.value()
-            return queryset.filter(
-                community_state=uid
-            )
-
+def custom_titled_filter(title):
+    class Wrapper(admin.FieldListFilter):
+        def __new__(cls, *args, **kwargs):
+            instance = admin.FieldListFilter.create(*args, **kwargs)
+            instance.title = title
+            return instance
+    return Wrapper
 
 class FacilityCityFilter(InputFilter):
     parameter_name = 'community_city'
@@ -80,6 +76,16 @@ class FolderPathFilter(InputFilter):
                 folder_path=uid
             )
 
+class FileFolderFilter(InputFilter):
+    parameter_name = 'folder_path'
+    title = ('Folder Path')
+
+    def queryset(self, request, queryset):
+        if self.value() is not None:
+            uid = self.value()
+            return queryset.filter(
+                folder__folder_path=uid
+            )
 
 class FolderFacilityFilter(InputFilter):
     parameter_name = 'entity'
@@ -117,13 +123,18 @@ class CommunityCableSystemFilter(InputFilter):
 
 class FacilityAdmin(admin.ModelAdmin):
 
-    list_filter = ('service_type', FacilityStateFilter, FacilityCityFilter, 'has_missing_files')
+    list_filter = (
+        ('service_type', custom_titled_filter('Service Type')), 
+        FacilityCityFilter, 
+        ('has_missing_files', custom_titled_filter('Has Missing Files'))
+    )
     search_fields = ['call_sign']
     list_display = (
         'call_sign',
         'service_type',
-        '_actual_file_count',
         'has_missing_files',
+        '_actual_file_count',
+        'expected_file_count',
         'community_city',
         'community_state',
         'facility_type',
@@ -137,6 +148,8 @@ class FacilityAdmin(admin.ModelAdmin):
         'call_sign',
         'service',
         'service_type',
+        '_actual_file_count',
+        'expected_file_count',
         'rf_channel',
         'virtual_channel',
         'license_expiration_date',
@@ -178,8 +191,8 @@ admin.site.register(Facility, FacilityAdmin)
 
 class FolderAdmin(admin.ModelAdmin):
 
-    #list_filter = ('entity__call_sign', FacilityFolderParentFilter)
-    search_fields = ['folder_path', 'entity_folder_id']
+    list_filter = (FacilityFolderParentFilter,)
+    search_fields = ['folder_path', 'entity_folder_id',]
     list_display = (
         'entity', 
         'folder_path',
@@ -224,7 +237,7 @@ class FileAdmin(admin.ModelAdmin, ExportCsvMixin):
     search_fields = (
         'file_name', 'folder__entity_folder_id', 'folder__folder_path',
     )
-    list_filter = ('missing_stored_file',)
+    list_filter = (FileFolderFilter, ('missing_stored_file', custom_titled_filter("Has File Stored")), 'folder__entity',)
     list_display = (
         'folder__entity',
         'file_name',
@@ -281,21 +294,21 @@ admin.site.register(CableFile, FileAdmin)
 
 class CableSystemAdmin(admin.ModelAdmin):
 
-    search_fields = ('legal_name',)
-    list_filter = ('has_missing_files',)
+    search_fields = ('legal_name', 'id',)
+    list_filter = (('has_missing_files', custom_titled_filter('Has Missing Files')),)
     list_display = (
         'id',
         'legal_name',
-        'service_type',
-        '_actual_file_count',
         'has_missing_files',
+        '_actual_file_count',
+        'expected_file_count',
     )
     readonly_fields = (
         "id",
         "legal_name",
         "service_type",
         "_actual_file_count",
-        "has_missing_files",
+        'expected_file_count',
         "operator_address_line1",
         "operator_name",
         "operator_address_line2",

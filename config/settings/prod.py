@@ -28,3 +28,9 @@ STATIC_URL = "https://%s/" % AWS_STATIC_CUSTOM_DOMAIN
 STATICFILES_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
 
 DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
+
+boto3_session = Session(
+	aws_access_key_id=secrets.get('aws_access_key_id'),
+    aws_secret_access_key=secrets.get('aws_secret_access_key'),
+    region_name=(AWS_S3_REGION_NAME)
+	)

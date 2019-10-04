@@ -4,7 +4,9 @@ import requests
 from requests.exceptions import HTTPError
 from fcc_opif.constants import FCC_API_URL, SERVICE_TYPES
 from fcc_opif.models import Facility
+import logging
 
+logger = logging.getLogger('fcc_opif.management')
 
 class Command(BaseCommand):
 
@@ -32,12 +34,11 @@ class Command(BaseCommand):
                 call_sign=self.call_sign,
                 service_type=self.service_type.lower(),
             )
-            msg = self.style.SUCCESS(f"{facility} was created.")
+            logger.debug(f"{facility} was created.")
         else:
-            msg = self.style.SUCCESS(f"{facility} was updated.")
+            logger.debug(f"{facility} was updated.")
 
         facility.refresh_from_fcc()
-        self.stdout.write(msg)
         facility.refresh_all_files()
 
     def get_all_facilities(self, service_type):

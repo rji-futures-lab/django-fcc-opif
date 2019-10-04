@@ -1,6 +1,8 @@
 from django.apps import apps
 from zappa.asynchronous import task
+import logging
 
+logger = logging.getLogger(__name__)
 
 @task
 def refresh_folder(entity_type, entity_folder_id):
@@ -8,10 +10,10 @@ def refresh_folder(entity_type, entity_folder_id):
     model = app.get_model(entity_type)
     folder = model.objects.get(entity_folder_id=entity_folder_id)
 
-    print(f'Begin refresh of {folder} ({folder.entity}).')
+    logger.debug(f'Begin refresh of {folder} ({folder.entity}).')
 
     folder.refresh_from_fcc()
 
-    print(f'Refresh of {folder} ({folder.entity}) ended.')
+    logger.debug(f'Refresh of {folder} ({folder.entity}) ended.')
 
     return

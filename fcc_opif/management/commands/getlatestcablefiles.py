@@ -5,7 +5,10 @@ import requests
 from requests.exceptions import HTTPError
 from fcc_opif.constants import FCC_API_URL, SERVICE_TYPES
 from fcc_opif.models import CableSystem
+from fcc_opif.models.base import FileBase
+import logging
 
+logger = logging.getLogger('fcc_opif.management')
 
 class Command(BaseCommand):
 
@@ -19,11 +22,11 @@ class Command(BaseCommand):
         self.service_type = 'cable'
 
         cable_system, created = CableSystem.objects.get_or_create(id=self.id)
+
         if created:
-            msg = self.style.SUCCESS(f"{cable_system.id} was created.")
+            logger.debug(f"{cable_system.id} was created.")
         else:
-            msg = self.style.SUCCESS(f"{cable_system.id} was updated.")
+            logger.debug(f"{cable_system.id} was updated.")
 
         cable_system.refresh_from_fcc()
-        self.stdout.write(msg)
         cable_system.refresh_all_files()

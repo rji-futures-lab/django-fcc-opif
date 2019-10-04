@@ -116,11 +116,11 @@ class Facility(models.Model):
                 defaults=clean_data,
                 entity_folder_id=clean_data["entity_folder_id"],
             )
-            folder._actual_file_count = 0
             refresh_folder('FacilityFolder', folder.entity_folder_id)
             
             self.actual_file_count += folder._actual_file_count
             self.expected_file_count += int(folder.file_count)
+
             if self.actual_file_count == self.expected_file_count:
                 setattr(self, 'has_missing_files', False)
             else:
