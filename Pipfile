@@ -16,6 +16,7 @@ psycopg2-binary = "*"
 zappa = "*"
 django-storages = "*"
 python-documentcloud = "*"
+watchtower = "*"
 
 [requires]
 python_version = "3.7.4"
