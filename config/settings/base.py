@@ -34,7 +34,6 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django.contrib.postgres',
     'fcc_opif',
-    'django_admin_listfilter_dropdown',
 ]
 
 SITE_ID = 1
