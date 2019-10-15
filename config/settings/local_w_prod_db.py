@@ -1,7 +1,6 @@
 """Django settings when serving locally with prod database."""
 # flake8: noqa
 from .prod import *
-from boto3.session import Session
 
 DEBUG = True
 

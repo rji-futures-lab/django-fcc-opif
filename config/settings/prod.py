@@ -1,5 +1,6 @@
 """Django settings when running project in production."""
 # flake8: noqa
+from boto3.session import Session
 from .base import *
 
 ALLOWED_HOSTS = [
@@ -38,10 +39,6 @@ boto3_session = Session(
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
-    'root': {
-        'level': logging.ERROR,
-        'handlers': ['console'],
-    },
     'formatters': {
         'simple': {
             'format': u"%(asctime)s [%(levelname)-8s] %(message)s",
