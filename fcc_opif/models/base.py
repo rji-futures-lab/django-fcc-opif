@@ -34,11 +34,11 @@ class FileBase(models.Model):
     file_status = models.CharField(
         editable=False, max_length=200
     )
-    create_ts = models.CharField(
-        editable=False, max_length=200
+    create_ts = models.DateTimeField(
+        auto_now=False, auto_now_add=False, editable=False, max_length=200, null=True, blank=True
     )
-    last_update_ts = models.CharField(
-        editable=False, max_length=200
+    last_update_ts = models.DateTimeField(
+        auto_now=False, auto_now_add=False, editable=False, max_length=200, null=True, blank=True
     )
     file_manager_id = models.CharField(
         editable=False, max_length=200
@@ -166,8 +166,12 @@ class FolderBase(models.Model):
     )
     file_count = models.IntegerField(editable=False, null=True)
     _actual_file_count = models.IntegerField(editable=False, null=True, db_column="actual_file_count", default=0)
-    create_ts = models.CharField(editable=False, max_length=200)
-    last_update_ts = models.CharField(editable=False, max_length=200)
+    create_ts = models.DateTimeField(
+        auto_now=False, auto_now_add=False, editable=False, max_length=200, null=True, blank=True
+    )
+    last_update_ts = models.DateTimeField(
+        auto_now=False, auto_now_add=False, editable=False, max_length=200, null=True, blank=True
+    )
 
     @property
     def actual_file_count(self):

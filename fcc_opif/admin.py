@@ -121,6 +121,17 @@ class CommunityCableSystemFilter(InputFilter):
                 system__legal_name=uid
             )
 
+class FolderEntityFilter(InputFilter):
+    parameter_name = 'folder__entity'
+    title = ('Entity')
+    
+    def queryset(self, request, queryset):
+        if self.value() is not None:
+            uid = self.value()
+            return queryset.filter(
+                folder__entity__call_sign__icontains=uid
+            )
+
 class FacilityAdmin(admin.ModelAdmin):
 
     list_filter = (
@@ -237,7 +248,8 @@ class FileAdmin(admin.ModelAdmin, ExportCsvMixin):
     search_fields = (
         'file_name', 'folder__entity_folder_id', 'folder__folder_path',
     )
-    list_filter = (FileFolderFilter, ('missing_stored_file', custom_titled_filter("Has File Stored")), 'folder__entity',)
+    
+    list_filter = (FileFolderFilter, FolderEntityFilter, ('missing_stored_file', custom_titled_filter("Has File Stored")))
     list_display = (
         'folder__entity',
         'file_name',
@@ -272,14 +284,14 @@ class FileAdmin(admin.ModelAdmin, ExportCsvMixin):
     )
     actions = ["export_as_csv"]
     ordering = ('folder__entity', 'folder', 'file_name')
-    list_select_related = ('folder__entity', )
+    list_select_related = ('folder__entity',)
 
     def folder__entity(self, obj):
         return obj.folder.entity
-    
+
     folder__entity.short_description = 'Entity'
     folder__entity.admin_order_field = 'folder__entity'
-
+    
     def has_add_permission(self, request, obj=None):
         return False
 
