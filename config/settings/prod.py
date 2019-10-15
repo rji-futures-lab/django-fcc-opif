@@ -33,4 +33,38 @@ boto3_session = Session(
 	aws_access_key_id=secrets.get('aws_access_key_id'),
     aws_secret_access_key=secrets.get('aws_secret_access_key'),
     region_name=(AWS_S3_REGION_NAME)
-	)
+)
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'root': {
+        'level': logging.ERROR,
+        'handlers': ['console'],
+    },
+    'formatters': {
+        'simple': {
+            'format': u"%(asctime)s [%(levelname)-8s] %(message)s",
+            'datefmt': "%Y-%m-%d %H:%M:%S"
+        },
+        'aws': {
+            'format': u"%(asctime)s [%(levelname)-8s] %(message)s",
+            'datefmt': "%Y-%m-%d %H:%M:%S"
+        },
+    },
+    'handlers': {
+        'watchtower': {
+            'level': 'DEBUG',
+            'class': 'watchtower.CloudWatchLogHandler',
+                     'boto3_session': boto3_session,
+            'formatter': 'aws',
+        },
+    },
+    'loggers': {
+        'django': {
+            'level': 'INFO',
+            'handlers': ['watchtower'],
+            'propagate': False,
+        },
+    },
+}
