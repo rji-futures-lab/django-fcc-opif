@@ -215,6 +215,7 @@ class FolderBase(models.Model):
             )
             
             subfolder.refresh_from_fcc()
+            print(subfolder.actual_file_count)
             self.actual_file_count += subfolder.actual_file_count
 
         for file in r.json()['folder']['files']:

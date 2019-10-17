@@ -132,6 +132,17 @@ class FolderEntityFilter(InputFilter):
                 folder__entity__call_sign__icontains=uid
             )
 
+class EntityFilter(InputFilter):
+    parameter_name = 'entity'
+    title = ('Entity')
+    
+    def queryset(self, request, queryset):
+        if self.value() is not None:
+            uid = self.value()
+            return queryset.filter(
+                entity__call_sign__icontains=uid
+            )
+
 class FacilityAdmin(admin.ModelAdmin):
 
     list_filter = (
@@ -202,7 +213,8 @@ admin.site.register(Facility, FacilityAdmin)
 
 class FolderAdmin(admin.ModelAdmin):
 
-    list_filter = (FacilityFolderParentFilter,)
+    date_hierarchy = 'last_update_ts'
+    list_filter = (FacilityFolderParentFilter, EntityFilter)
     search_fields = ['folder_path', 'entity_folder_id',]
     list_display = (
         'entity', 
@@ -245,6 +257,7 @@ admin.site.register(CableFolder, FolderAdmin)
 
 class FileAdmin(admin.ModelAdmin, ExportCsvMixin):
 
+    date_hierarchy = 'last_update_ts'
     search_fields = (
         'file_name', 'folder__entity_folder_id', 'folder__folder_path',
     )

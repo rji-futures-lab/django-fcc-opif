@@ -118,7 +118,10 @@ class Facility(models.Model):
             )
             refresh_folder('FacilityFolder', folder.entity_folder_id)
             
-            self.actual_file_count += folder._actual_file_count
+            print(folder._actual_file_count)
+            print(int(folder.file_count))
+
+            self.actual_file_count += folder.actual_file_count
             self.expected_file_count += int(folder.file_count)
 
             if self.actual_file_count == self.expected_file_count:

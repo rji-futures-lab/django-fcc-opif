@@ -190,7 +190,7 @@ class CableSystem(models.Model):
             refresh_folder('CableFolder', folder.entity_folder_id)
             #print(folder._actual_file_count)
 
-            self.actual_file_count += folder._actual_file_count
+            self.actual_file_count += folder.actual_file_count
             self.expected_file_count += int(folder.file_count)
             if self.actual_file_count == self.expected_file_count:
                 setattr(self, 'has_missing_files', False)
