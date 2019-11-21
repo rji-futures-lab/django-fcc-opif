@@ -1,4 +1,4 @@
-'''Find a facility and get it's latest file data'''
+'''Find a cable system and get its latest file data'''
 import re
 from django.core.management.base import BaseCommand, CommandError
 import requests
