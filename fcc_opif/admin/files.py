@@ -48,6 +48,7 @@ class ExportCsvMixin:
 
 @admin.register(CableFile, FacilityFile)
 class FileAdmin(admin.ModelAdmin, ExportCsvMixin):
+    date_hierarchy = 'last_update_ts'
     search_fields = (
         'file_name', 'folder__entity_folder_id', 'folder__folder_path',
     )
@@ -121,6 +122,7 @@ class FileAdmin(admin.ModelAdmin, ExportCsvMixin):
 
 @admin.register(CableFolder, FacilityFolder)
 class FolderAdmin(admin.ModelAdmin):
+    date_hierarchy = 'last_update_ts'
     list_filter = (FolderPathFilter, EntityFilter)
     search_fields = ['folder_path', 'entity_folder_id',]
     list_display = (
