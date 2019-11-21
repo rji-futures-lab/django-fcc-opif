@@ -13,7 +13,7 @@ class Command(BaseCommand):
     help = "Update a facility including all folders and files"
 
     def add_arguments(self, parser):
-        parser.add_argument('id', type=int)
+        parser.add_argument('id', type=str)
 
     def handle(self, *args, **options):
         facility_id = options['id']

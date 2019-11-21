@@ -2,11 +2,13 @@ from zappa.asynchronous import task
 from django.core.management import call_command
 from django.core.management.base import CommandError
 from fcc_opif.models import Facility, CableSystem
+import logging
 
 logger = logging.getLogger(__name__)
 
+
 @task()
-def update_facility(call_sign, facility_id):
+def update_facility(facility_id):
     try:
         call_command(
             'updatefacility', facility_id
@@ -26,9 +28,9 @@ def update_cable_system(id):
 
 def main():
     for facility in Facility.objects.all():
-        update_facility(facility_id)
+        update_facility(facility.id)
     logger.info(f'Initialized update for all facilities.')
 
     for cable_system in CableSystem.objects.all():
-        update_cable_system(cable_system_id)
+        update_cable_system(cable_system.id)
     logger.info(f'Initialized update for all cable systems.')
