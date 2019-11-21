@@ -110,4 +110,5 @@ secrets.cfg
 
 zappa_settings.json
 media/
-fcc-opif*.zip
+*.zip
+credentials.csv
