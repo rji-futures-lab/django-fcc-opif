@@ -3,7 +3,7 @@ from django.contrib.postgres.fields import JSONField
 import requests
 from fcc_opif.constants import FCC_API_URL
 from fcc_opif.utils import camelcase_to_underscore, json_cleaner
-from .base import FileBase, FolderBase, MissingFileManager
+from .base import FileBase, FolderBase
 from fcc_opif.handlers import refresh_folder
 
 
@@ -33,7 +33,6 @@ class CableFile(FileBase):
         db_column='folder_id',
         editable=False,
     )
-    #missing_files = MissingFileManager()
 
 
 class CableFolder(FolderBase):
@@ -116,25 +115,6 @@ class CableSystem(models.Model):
     cable_service_zip_codes = JSONField(null=True)
     cable_service_emp_units = JSONField(null=True)
     cable_communities = JSONField(null=True)
-    _actual_file_count = models.IntegerField(editable=False, null=True, db_column="actual_file_count")
-    _expected_file_count = models.IntegerField(editable=False, null=True, db_column="expected_file_count")
-    has_missing_files = models.BooleanField(default=False)
-
-    @property
-    def actual_file_count(self):
-        return self._actual_file_count
-
-    @actual_file_count.setter
-    def actual_file_count(self, value):
-        self._actual_file_count = value
-
-    @property
-    def expected_file_count(self):
-        return self._expected_file_count
-
-    @expected_file_count.setter
-    def expected_file_count(self, value):
-        self._expected_file_count = value
 
     def refresh_from_fcc(self):
 
@@ -186,16 +166,11 @@ class CableSystem(models.Model):
         for folder_data in folder_list:
             clean_data = json_cleaner(folder_data)
             clean_data['entity_id'] = self.id
-            folder, created = self.folders.update_or_create(defaults = clean_data, entity_folder_id = clean_data["entity_folder_id"])  # noqa
+            folder, created = self.folders.update_or_create(
+                defaults=clean_data,
+                entity_folder_id=clean_data["entity_folder_id"]
+            ) 
             refresh_folder('CableFolder', folder.entity_folder_id)
-            #print(folder._actual_file_count)
-
-            self.actual_file_count += folder._actual_file_count
-            self.expected_file_count += int(folder.file_count)
-            if self.actual_file_count == self.expected_file_count:
-                setattr(self, 'has_missing_files', False)
-            else:
-                setattr(self, 'has_missing_files', True)
 
             self.save()
 

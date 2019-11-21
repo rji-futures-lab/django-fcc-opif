@@ -9,14 +9,13 @@ from fcc_opif.utils import camelcase_to_underscore, json_cleaner
 from documentcloud import DocumentCloud
 import logging
 
+
 logger=logging.getLogger(__name__)
+
 
 def get_upload_path(instance, file_name):
     return f'fcc_files/{instance.relative_path}'
 
-class MissingFileManager(models.Manager):
-    def get_queryset(self):
-        return super().get_queryset().filter(stored_file__isnull=True)
 
 class FileBase(models.Model):
     file_id = models.UUIDField(
@@ -57,9 +56,6 @@ class FileBase(models.Model):
         upload_to=get_upload_path,
         blank=True,
         max_length=300,
-    )
-    missing_stored_file = models.BooleanField(
-        default=False,  
     )
 
     @property
@@ -144,6 +140,7 @@ class FileBase(models.Model):
             models.Index(fields=['file_name']),
         ]
 
+
 class FolderBase(models.Model):
     entity_folder_id = models.UUIDField(
         editable=False, max_length=200, primary_key=True
@@ -165,30 +162,17 @@ class FolderBase(models.Model):
         editable=False,
     )
     file_count = models.IntegerField(editable=False, null=True)
-    _actual_file_count = models.IntegerField(editable=False, null=True, db_column="actual_file_count", default=0)
     create_ts = models.DateTimeField(
         auto_now=False, auto_now_add=False, editable=False, max_length=200, null=True, blank=True
     )
     last_update_ts = models.DateTimeField(
         auto_now=False, auto_now_add=False, editable=False, max_length=200, null=True, blank=True
     )
-
-    @property
-    def actual_file_count(self):
-        return self._actual_file_count
-
-    @actual_file_count.setter
-    def actual_file_count(self, value):
-        self._actual_file_count = value
-
     
     def refresh_from_fcc(self):
         """
         Call FCC's API to get details for the folder and update our records.
         """
-        self._actual_file_count = 0
-        total_file_count = 0
-
         entity_folder_id = self.entity_folder_id
         endpoint_url = f"{FCC_API_URL}/manager/folder/id/{entity_folder_id}.json" # noqa
         payload = {'entityId': self.entity.id}
@@ -215,7 +199,6 @@ class FolderBase(models.Model):
             )
             
             subfolder.refresh_from_fcc()
-            self.actual_file_count += subfolder.actual_file_count
 
         for file in r.json()['folder']['files']:
             clean_file_data = json_cleaner(file)
@@ -235,11 +218,6 @@ class FolderBase(models.Model):
             if fcc_updated:
                 file.last_update_ts = last_updated
                 file.save()
-            self.actual_file_count += 1
-
-            if file.stored_file == '':
-                file.missing_stored_file=True
-
 
         return self.save()
 
