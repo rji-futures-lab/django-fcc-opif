@@ -9,7 +9,7 @@ logger = logging.getLogger(__name__)
 def update_facility(call_sign, facility_id):
     try:
         call_command(
-            'getlatestfacilityfiles', facility_id
+            'updatefacility', facility_id
         )
     except CommandError as e:
         logger.error(e)
