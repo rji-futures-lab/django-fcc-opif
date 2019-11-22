@@ -34,10 +34,18 @@ class FileBase(models.Model):
         editable=False, max_length=200
     )
     create_ts = models.DateTimeField(
-        auto_now=False, auto_now_add=False, editable=False, max_length=200, null=True, blank=True
+        auto_now=False,
+        auto_now_add=False,
+        editable=False,
+        null=True,
+        blank=True
     )
     last_update_ts = models.DateTimeField(
-        auto_now=False, auto_now_add=False, editable=False, max_length=200, null=True, blank=True
+        auto_now=False,
+        auto_now_add=False,
+        editable=False,
+        null=True,
+        blank=True,
     )
     file_manager_id = models.CharField(
         editable=False, max_length=200
@@ -46,7 +54,7 @@ class FileBase(models.Model):
         editable=False, max_length=200, null=True
     )
     moved_ts = models.CharField(
-        editable=False, max_length=200, null=True
+        editable=False,max_length=200, null=True
     )
     documentcloud_id = models.CharField(
         editable=False, max_length=200, null=True
@@ -163,10 +171,18 @@ class FolderBase(models.Model):
     )
     file_count = models.IntegerField(editable=False, null=True)
     create_ts = models.DateTimeField(
-        auto_now=False, auto_now_add=False, editable=False, max_length=200, null=True, blank=True
+        auto_now=False,
+        auto_now_add=False,
+        editable=False,
+        null=True,
+        blank=True,
     )
     last_update_ts = models.DateTimeField(
-        auto_now=False, auto_now_add=False, editable=False, max_length=200, null=True, blank=True
+        auto_now=False,
+        auto_now_add=False,
+        editable=False,
+        null=True,
+        blank=True,
     )
     
     def refresh_from_fcc(self):

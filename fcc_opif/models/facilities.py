@@ -47,6 +47,11 @@ class Facility(models.Model):
     post_card_id = models.CharField(editable=False, max_length=7)
     main_studio_contact = JSONField(editable=False)
     cc_contact = JSONField(editable=False, blank=True, null=True)
+    last_refreshed_ts = models.DateTimeField(
+        editable=False,
+        null=True,
+        blank=True,
+    )
 
     def clean_api_data(self):
         if len(self.frequency) == 0:
