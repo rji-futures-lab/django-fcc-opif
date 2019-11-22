@@ -54,8 +54,8 @@ class CableSystem(models.Model):
     operator_address_line2 = models.CharField(max_length=200, editable=False)
     operator_po_box = models.CharField(max_length=200, editable=False)
     operator_city = models.CharField(max_length=200, editable=False)
-    operator_zipcode = models.CharField(max_length=200, editable=False)
-    operator_zipcode_suffix = models.CharField(max_length=200, editable=False)
+    operator_zip_code = models.CharField(max_length=200, editable=False)
+    operator_zip_code_suffix = models.CharField(max_length=200, editable=False)
     operator_state = models.CharField(max_length=2, editable=False)
     operator_email = models.CharField(max_length=200, blank=True, editable=False)
     operator_website = models.CharField(max_length=200, blank=True, editable=False)
@@ -70,8 +70,8 @@ class CableSystem(models.Model):
     principal_po_box = models.CharField(max_length=200, blank=True, editable=False)
     principal_city = models.CharField(max_length=200, blank=True, editable=False)
     principal_state = models.CharField(max_length=200, blank=True, editable=False)
-    principal_zipcode = models.CharField(max_length=200, blank=True, editable=False)
-    principal_zipcode_suffix = models.CharField(max_length=200, blank=True, editable=False)
+    principal_zip_code = models.CharField(max_length=200, blank=True, editable=False)
+    principal_zip_code_suffix = models.CharField(max_length=200, blank=True, editable=False)
     principal_fax = models.CharField(max_length=200, blank=True, editable=False)
     principal_phone = models.CharField(max_length=200, blank=True, editable=False)
     principal_email = models.CharField(max_length=200, blank=True, editable=False)
@@ -94,10 +94,10 @@ class CableSystem(models.Model):
     local_file_state = models.CharField(
         max_length=200, blank=True, editable=False
     )
-    local_file_zipcode = models.CharField(
+    local_file_zip_code = models.CharField(
         max_length=200, blank=True, editable=False
     )
-    local_file_zipcode_suffix = models.CharField(
+    local_file_zip_code_suffix = models.CharField(
         max_length=200, blank=True, editable=False
     )
     local_file_contact_fax = models.CharField(
@@ -115,7 +115,12 @@ class CableSystem(models.Model):
     cable_service_zip_codes = JSONField(null=True)
     cable_service_emp_units = JSONField(null=True)
     cable_communities = JSONField(null=True)
+    '''
+    def clean_api_data(self):
+        self.id
 
+        return self
+    '''
     def refresh_from_fcc(self):
 
         psid = self.id
