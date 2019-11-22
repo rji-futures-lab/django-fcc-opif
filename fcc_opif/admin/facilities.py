@@ -2,6 +2,7 @@ from django.contrib import admin
 from django.http import HttpResponse
 from fcc_opif.admin.filters import (
     FacilityCityFilter,
+    FacilityStateFilter,
 )
 from fcc_opif.models import Facility
 
@@ -12,6 +13,7 @@ class FacilityAdmin(admin.ModelAdmin):
     list_filter = (
         'service_type', 
         FacilityCityFilter,
+        FacilityStateFilter,
     )
     search_fields = ['call_sign']
     list_display = (
