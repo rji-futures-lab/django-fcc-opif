@@ -1,5 +1,6 @@
 from django.contrib.postgres.fields import JSONField
 from django.db import models
+from django.utils import timezone
 import requests
 from fcc_opif.constants import FCC_API_URL, SERVICE_TYPES
 from fcc_opif.handlers import refresh_folder
@@ -86,6 +87,8 @@ class Facility(models.Model):
                 elif 'channel' in key.lower() and value == '':
                     value = None
             setattr(self, camelcase_to_underscore(key), value)
+
+        self.last_refreshed_ts = timezone.now()
 
         return self.save()
 

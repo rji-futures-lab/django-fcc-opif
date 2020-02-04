@@ -1,7 +1,6 @@
 from django.core.management import call_command
 from django.core.management.base import CommandError
 from django.db.models import Q
-from django.utils import timezone
 from zappa.asynchronous import task
 from fcc_opif.models import Facility, CableSystem
 import logging
@@ -32,11 +31,7 @@ def update_cable_system(id):
 def handle_facilities():
     call_command('getfacilities')
 
-    yesterday = timezone.now() - timezone.timedelta(days=1)
-
-    facilities = Facility.objects.filter(
-        Q(last_refreshed_ts__isnull=True) | Q(last_refreshed_ts__gt=yesterday)
-    )[:100]
+    facilities = Facility.objects.order_by('last_refreshed_ts')[:30]
 
     for facility in facilities:
         update_facility(facility.id)
@@ -44,6 +39,7 @@ def handle_facilities():
 
 
 def handle_cable_systems():
+    pass
     # call_command('getcablesystems')
 
     # for cable_system in CableSystem.objects.all():
