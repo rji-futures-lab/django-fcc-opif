@@ -20,7 +20,7 @@ def update_facility(facility_id):
 def update_cable_system(id):
     try:
         call_command(
-            'getlatestcablefiles', cable_system_id
+            'updatecablesystem', cable_system_id
         )
     except CommandError as e:
         logger.error(e)

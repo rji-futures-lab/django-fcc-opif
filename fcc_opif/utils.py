@@ -25,5 +25,8 @@ def json_cleaner(data):
                 value = True
             elif value.upper() == 'N':
                 value = False
-        new_dict[camelcase_to_underscore(key)] = value
+        if key == 'psid' or key == 'facilityType':
+            pass
+        else:
+            new_dict[camelcase_to_underscore(key)] = value
     return new_dict
