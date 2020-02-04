@@ -39,16 +39,17 @@ def handle_facilities():
 
 
 def handle_cable_systems():
-    pass
-    # call_command('getcablesystems')
+    call_command('getcablesystems')
 
-    # for cable_system in CableSystem.objects.all():
-    #     update_cable_system(cable_system.id)
-    # logger.info(f'Initialized update for all cable systems.')
+    cable_systems = CableSystem.objects.order_by('last_refreshed_ts')[:30]
+
+    for cable_system in cable_systems:
+        update_cable_system(cable_system.id)
+    logger.info(f'Initialized update for {len(cable_systems)} cable systems.')
 
 
 def main():
 
     handle_facilities()
 
-    # handle_cable_systems()
+    handle_cable_systems()
