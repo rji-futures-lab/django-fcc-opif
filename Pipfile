@@ -10,7 +10,6 @@ ipdb = "*"
 
 [packages]
 requests = "*"
-requests-cache = "*"
 django = "*"
 psycopg2-binary = "*"
 zappa = "*"

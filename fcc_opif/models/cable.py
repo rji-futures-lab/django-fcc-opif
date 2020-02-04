@@ -3,7 +3,7 @@ from django.contrib.postgres.fields import JSONField
 import requests
 from fcc_opif.constants import FCC_API_URL
 from fcc_opif.utils import camelcase_to_underscore, json_cleaner
-from .base import FileBase, FolderBase, MissingFileManager
+from .base import FileBase, FolderBase
 from fcc_opif.handlers import refresh_folder
 
 
@@ -33,7 +33,6 @@ class CableFile(FileBase):
         db_column='folder_id',
         editable=False,
     )
-    #missing_files = MissingFileManager()
 
 
 class CableFolder(FolderBase):
@@ -55,8 +54,8 @@ class CableSystem(models.Model):
     operator_address_line2 = models.CharField(max_length=200, editable=False)
     operator_po_box = models.CharField(max_length=200, editable=False)
     operator_city = models.CharField(max_length=200, editable=False)
-    operator_zipcode = models.CharField(max_length=200, editable=False)
-    operator_zipcode_suffix = models.CharField(max_length=200, editable=False)
+    operator_zip_code = models.CharField(max_length=200, editable=False)
+    operator_zip_code_suffix = models.CharField(max_length=200, editable=False)
     operator_state = models.CharField(max_length=2, editable=False)
     operator_email = models.CharField(max_length=200, blank=True, editable=False)
     operator_website = models.CharField(max_length=200, blank=True, editable=False)
@@ -71,8 +70,8 @@ class CableSystem(models.Model):
     principal_po_box = models.CharField(max_length=200, blank=True, editable=False)
     principal_city = models.CharField(max_length=200, blank=True, editable=False)
     principal_state = models.CharField(max_length=200, blank=True, editable=False)
-    principal_zipcode = models.CharField(max_length=200, blank=True, editable=False)
-    principal_zipcode_suffix = models.CharField(max_length=200, blank=True, editable=False)
+    principal_zip_code = models.CharField(max_length=200, blank=True, editable=False)
+    principal_zip_code_suffix = models.CharField(max_length=200, blank=True, editable=False)
     principal_fax = models.CharField(max_length=200, blank=True, editable=False)
     principal_phone = models.CharField(max_length=200, blank=True, editable=False)
     principal_email = models.CharField(max_length=200, blank=True, editable=False)
@@ -95,10 +94,10 @@ class CableSystem(models.Model):
     local_file_state = models.CharField(
         max_length=200, blank=True, editable=False
     )
-    local_file_zipcode = models.CharField(
+    local_file_zip_code = models.CharField(
         max_length=200, blank=True, editable=False
     )
-    local_file_zipcode_suffix = models.CharField(
+    local_file_zip_code_suffix = models.CharField(
         max_length=200, blank=True, editable=False
     )
     local_file_contact_fax = models.CharField(
@@ -116,26 +115,12 @@ class CableSystem(models.Model):
     cable_service_zip_codes = JSONField(null=True)
     cable_service_emp_units = JSONField(null=True)
     cable_communities = JSONField(null=True)
-    _actual_file_count = models.IntegerField(editable=False, null=True, db_column="actual_file_count")
-    _expected_file_count = models.IntegerField(editable=False, null=True, db_column="expected_file_count")
-    has_missing_files = models.BooleanField(default=False)
+    '''
+    def clean_api_data(self):
+        self.id
 
-    @property
-    def actual_file_count(self):
-        return self._actual_file_count
-
-    @actual_file_count.setter
-    def actual_file_count(self, value):
-        self._actual_file_count = value
-
-    @property
-    def expected_file_count(self):
-        return self._expected_file_count
-
-    @expected_file_count.setter
-    def expected_file_count(self, value):
-        self._expected_file_count = value
-
+        return self
+    '''
     def refresh_from_fcc(self):
 
         psid = self.id
@@ -186,16 +171,11 @@ class CableSystem(models.Model):
         for folder_data in folder_list:
             clean_data = json_cleaner(folder_data)
             clean_data['entity_id'] = self.id
-            folder, created = self.folders.update_or_create(defaults = clean_data, entity_folder_id = clean_data["entity_folder_id"])  # noqa
+            folder, created = self.folders.update_or_create(
+                defaults=clean_data,
+                entity_folder_id=clean_data["entity_folder_id"]
+            ) 
             refresh_folder('CableFolder', folder.entity_folder_id)
-            #print(folder._actual_file_count)
-
-            self.actual_file_count += folder.actual_file_count
-            self.expected_file_count += int(folder.file_count)
-            if self.actual_file_count == self.expected_file_count:
-                setattr(self, 'has_missing_files', False)
-            else:
-                setattr(self, 'has_missing_files', True)
 
             self.save()
 

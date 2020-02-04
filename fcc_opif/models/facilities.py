@@ -1,10 +1,11 @@
 from django.contrib.postgres.fields import JSONField
 from django.db import models
+from django.utils import timezone
 import requests
 from fcc_opif.constants import FCC_API_URL, SERVICE_TYPES
 from fcc_opif.handlers import refresh_folder
 from fcc_opif.utils import camelcase_to_underscore, json_cleaner
-from .base import FileBase, FolderBase, MissingFileManager
+from .base import FileBase, FolderBase
 
 
 class Facility(models.Model):
@@ -26,7 +27,7 @@ class Facility(models.Model):
     )  # all states abbreviated?
     facility_type = models.CharField(editable=False, max_length=200)
     frequency = models.DecimalField(
-        editable=False, max_digits=5, decimal_places=1
+        editable=False, max_digits=5, decimal_places=1, null=True
     )
     active_ind = models.BooleanField(editable=False, )
     scanned_letter_ids = models.CharField(
@@ -47,25 +48,23 @@ class Facility(models.Model):
     post_card_id = models.CharField(editable=False, max_length=7)
     main_studio_contact = JSONField(editable=False)
     cc_contact = JSONField(editable=False, blank=True, null=True)
-    _actual_file_count = models.IntegerField(editable=False, null=True, db_column="actual_file_count")
-    _expected_file_count = models.IntegerField(editable=False, null=True, db_column="expected_file_count")
-    has_missing_files = models.BooleanField(default=False)
+    last_refreshed_ts = models.DateTimeField(
+        editable=False,
+        null=True,
+        blank=True,
+    )
 
-    @property
-    def actual_file_count(self):
-        return self._actual_file_count
+    def clean_api_data(self):
+        if len(self.frequency) == 0:
+            self.frequency = None
+        if (
+            not self.main_studio_contact or
+            len(self.main_studio_contact) == 0 or
+            self.main_studio_contact == ''
+        ):
+            self.main_studio_contact = {}
 
-    @actual_file_count.setter
-    def actual_file_count(self, value):
-        self._actual_file_count = value
-
-    @property
-    def expected_file_count(self):
-        return self._expected_file_count
-
-    @expected_file_count.setter
-    def expected_file_count(self, value):
-        self._expected_file_count = value
+        return self
 
     def refresh_from_fcc(self):
         """
@@ -89,6 +88,8 @@ class Facility(models.Model):
                     value = None
             setattr(self, camelcase_to_underscore(key), value)
 
+        self.last_refreshed_ts = timezone.now()
+
         return self.save()
 
     def refresh_all_files(self):
@@ -97,8 +98,6 @@ class Facility(models.Model):
 
         Create new folders and files, update existing ones.
         """
-        self.actual_file_count = 0
-        self.expected_file_count = 0
 
         serviceType = self.service_type
         entityID = self.id
@@ -117,17 +116,6 @@ class Facility(models.Model):
                 entity_folder_id=clean_data["entity_folder_id"],
             )
             refresh_folder('FacilityFolder', folder.entity_folder_id)
-            
-            print(folder._actual_file_count)
-            print(int(folder.file_count))
-
-            self.actual_file_count += folder.actual_file_count
-            self.expected_file_count += int(folder.file_count)
-
-            if self.actual_file_count == self.expected_file_count:
-                setattr(self, 'has_missing_files', False)
-            else:
-                setattr(self, 'has_missing_files', True)
 
             self.save()
 
@@ -152,7 +140,6 @@ class FacilityFile(FileBase):
         db_column='folder_id',
         editable=False,
     )
-    #missing_files = MissingFileManager()
 
 
 class FacilityFolder(FolderBase):
