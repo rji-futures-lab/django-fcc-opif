@@ -10,7 +10,7 @@ ipdb = "*"
 
 [packages]
 requests = "*"
-django = "*"
+django = ">=2.2.9"
 psycopg2-binary = "*"
 zappa = "*"
 django-storages = "*"
