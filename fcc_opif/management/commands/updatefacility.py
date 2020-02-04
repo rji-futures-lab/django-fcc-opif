@@ -23,5 +23,7 @@ class Command(BaseCommand):
         except Facility.DoesNotExist:
             logger.debug(f"No facility with id {facility_id}.")
         else:
+            logger.info(f"Update of {facility} ({facility_id}) started.")
             facility.refresh_from_fcc()
             facility.refresh_all_files()
+            logger.info(f"Update of {facility} ({facility_id}) completed.")

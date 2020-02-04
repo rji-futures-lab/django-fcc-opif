@@ -1,5 +1,6 @@
 from django.contrib.postgres.fields import JSONField
 from django.db import models
+from django.utils import timezone
 import requests
 from fcc_opif.constants import FCC_API_URL, SERVICE_TYPES
 from fcc_opif.handlers import refresh_folder
@@ -47,6 +48,11 @@ class Facility(models.Model):
     post_card_id = models.CharField(editable=False, max_length=7)
     main_studio_contact = JSONField(editable=False)
     cc_contact = JSONField(editable=False, blank=True, null=True)
+    last_refreshed_ts = models.DateTimeField(
+        editable=False,
+        null=True,
+        blank=True,
+    )
 
     def clean_api_data(self):
         if len(self.frequency) == 0:
@@ -81,6 +87,8 @@ class Facility(models.Model):
                 elif 'channel' in key.lower() and value == '':
                     value = None
             setattr(self, camelcase_to_underscore(key), value)
+
+        self.last_refreshed_ts = timezone.now()
 
         return self.save()
 

@@ -50,6 +50,17 @@ class FacilityCityFilter(InputFilter):
             )
 
 
+class FacilityStateFilter(InputFilter):
+    parameter_name = 'community_state'
+    title = ('State')
+
+    def queryset(self, request, queryset):
+        if self.value() is not None:
+            return queryset.filter(
+                community_state__iexact=self.value()
+            )
+
+
 class FileFolderPathFilter(InputFilter):
     parameter_name = 'folder_path'
     title = ('Folder Path')
