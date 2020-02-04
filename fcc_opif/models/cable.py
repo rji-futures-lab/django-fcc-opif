@@ -147,11 +147,12 @@ class CableSystem(models.Model):
                 setattr(self, camelcase_to_underscore(key), value)
         
         for community in r.json()['results']['cableSystemInfo']['cableCommunities']:
-            clean_community_data = json_cleaner(community)
-            community, created = self.communities.update_or_create(
-                defaults=clean_community_data,
-                community_unit_id=clean_community_data["community_unit_id"]
-            )
+            if community.items():
+                clean_community_data = json_cleaner(community)
+                community, created = self.communities.update_or_create(
+                    defaults=clean_community_data,
+                    community_unit_id=clean_community_data["community_unit_id"]
+                )
 
         return self.save()
 

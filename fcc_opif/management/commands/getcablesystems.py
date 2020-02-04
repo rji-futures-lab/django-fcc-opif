@@ -11,7 +11,7 @@ logger = logging.getLogger('fcc_opif.management')
 
 class Command(BaseCommand):
 
-    help = "Get all facilities from the FCC and save to the database."
+    help = "Get all cable systems from the FCC and save to the database."
 
     def handle(self, *args, **options):
         serviceType = 'cable'

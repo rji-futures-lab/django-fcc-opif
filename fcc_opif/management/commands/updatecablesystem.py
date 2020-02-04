@@ -10,7 +10,7 @@ logger = logging.getLogger('fcc_opif.management')
 
 class Command(BaseCommand):
 
-    help = "Find a cable system and get its latest file data."
+    help = "Update a cable system including all folders and files."
 
     def add_arguments(self, parser):
         parser.add_argument('id', type=str)
@@ -23,5 +23,7 @@ class Command(BaseCommand):
         except CableSystem.DoesNotExist:
             logger.debug(f"No cable system with id {cable_system_id}.")
         else:
+            logger.info(f"Update of {cable_system} ({cable_system_id}) started.")
             cable_system.refresh_from_fcc()
             cable_system.refresh_all_files()
+            logger.info(f"Update of {cable_system} ({cable_system_id}) completed.")
