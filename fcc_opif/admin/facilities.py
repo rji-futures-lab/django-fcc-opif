@@ -3,6 +3,8 @@ from django.http import HttpResponse
 from fcc_opif.admin.filters import (
     FacilityCityFilter,
     FacilityStateFilter,
+    FacilityPartyNameFilter,
+    FacilityNetworkAffiliateFilter,
 )
 from fcc_opif.models import Facility
 
@@ -14,10 +16,13 @@ class FacilityAdmin(admin.ModelAdmin):
         'service_type', 
         FacilityCityFilter,
         FacilityStateFilter,
+        FacilityPartyNameFilter,
+        FacilityNetworkAffiliateFilter,
     )
-    search_fields = ['call_sign']
+    search_fields = ['call_sign', 'id']
     list_display = (
         'call_sign',
+        'id',
         'service_type',
         'community_city',
         'community_state',
@@ -33,8 +38,6 @@ class FacilityAdmin(admin.ModelAdmin):
         'call_sign',
         'service',
         'service_type',
-        # '_actual_file_count',
-        # 'expected_file_count',
         'rf_channel',
         'virtual_channel',
         'license_expiration_date',

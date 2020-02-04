@@ -61,6 +61,28 @@ class FacilityStateFilter(InputFilter):
             )
 
 
+class FacilityPartyNameFilter(InputFilter):
+    parameter_name = 'party_name'
+    title = ('Party Name')
+
+    def queryset(self, request, queryset):
+        if self.value() is not None:
+            return queryset.filter(
+                party_name__iexact=self.value()
+            )
+
+
+class FacilityNetworkAffiliateFilter(InputFilter):
+    parameter_name = 'network_afil'
+    title = ('Network Affiliate')
+
+    def queryset(self, request, queryset):
+        if self.value() is not None:
+            return queryset.filter(
+                network_afil__iexact=self.value()
+            )
+
+
 class FileFolderPathFilter(InputFilter):
     parameter_name = 'folder_path'
     title = ('Folder Path')
