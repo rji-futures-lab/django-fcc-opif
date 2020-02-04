@@ -101,11 +101,11 @@ class FolderEntityFilter(InputFilter):
     
     def queryset(self, request, queryset):
         if self.value() is not None:
-            if queryset.model._meta.model_name == 'CableFile':
+            if queryset.model._meta.model_name == 'cablefile':
                 queryset = queryset.filter(
                     folder__entity__legal_name__icontains=self.value()
                 )
-            elif queryset.model._meta.model_name == 'FacilityFile':
+            elif queryset.model._meta.model_name == 'facilityfile':
                 queryset = queryset.filter(
                     folder__entity__call_sign__icontains=self.value()
                 )
@@ -118,11 +118,12 @@ class EntityFilter(InputFilter):
     
     def queryset(self, request, queryset):
         if self.value() is not None:
-            if queryset.model._meta.model_name == 'CableFile':
+            print(queryset.model._meta.model_name)
+            if queryset.model._meta.model_name == 'cablefolder':
                 queryset = queryset.filter(
                     entity__legal_name__icontains=self.value()
                 )
-            elif queryset.model._meta.model_name == 'FacilityFile':
+            elif queryset.model._meta.model_name == 'facilityfolder':
                 queryset = queryset.filter(
                     entity__call_sign__icontains=self.value()
                 )
