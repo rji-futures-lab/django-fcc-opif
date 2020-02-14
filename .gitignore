@@ -111,4 +111,4 @@ cache.sqlite
 zappa_settings.json
 media/
 *.zip
-credentials.csv
+*.csv
