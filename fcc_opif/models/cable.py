@@ -165,9 +165,6 @@ class CableSystem(models.Model):
         return self.save()
 
     def refresh_all_files(self):
-        
-        self.actual_file_count = 0
-        self.expected_file_count = 0
 
         entityID = self.id
         endpoint_url = f"{FCC_API_URL}/manager/folder/parentFolders.json?entityId={entityID}&sourceService=cable"  # noqa
