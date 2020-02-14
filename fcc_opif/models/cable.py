@@ -3,7 +3,7 @@ from django.contrib.postgres.fields import JSONField
 import requests
 from fcc_opif.constants import FCC_API_URL
 from fcc_opif.utils import camelcase_to_underscore, json_cleaner
-from .base import FileBase, FolderBase
+from .base import FileBase, FolderBase, FilePageBase
 from fcc_opif.handlers import refresh_folder
 
 
@@ -34,6 +34,14 @@ class CableFile(FileBase):
         editable=False,
     )
 
+class CableFilePage(FilePageBase):
+    file = models.ForeignKey(
+        'CableFile',
+        related_name='file_pages',
+        on_delete=models.CASCADE,
+        db_column='file_id',
+        editable=False,
+    )
 
 class CableFolder(FolderBase):
     entity = models.ForeignKey(

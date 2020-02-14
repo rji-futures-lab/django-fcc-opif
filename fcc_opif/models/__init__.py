@@ -2,11 +2,13 @@ from .cable import (
     CableCommunity,
     CableFile,
     CableFolder,
+    CableFilePage,
     CableSystem,
 )
 from .facilities import (
     Facility,
     FacilityFile,
+    FacilityFilePage,
     FacilityFolder,
 )
 

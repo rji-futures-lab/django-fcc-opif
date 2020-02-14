@@ -16,6 +16,7 @@ zappa = "*"
 django-storages = "*"
 python-documentcloud = "*"
 watchtower = "*"
+pillow = "*"
 
 [requires]
 python_version = "3.7.4"

@@ -5,8 +5,34 @@ import requests
 from fcc_opif.constants import FCC_API_URL, SERVICE_TYPES
 from fcc_opif.handlers import refresh_folder
 from fcc_opif.utils import camelcase_to_underscore, json_cleaner
-from .base import FileBase, FolderBase
+from .base import FileBase, FolderBase, FilePageBase
 
+class FacilityFile(FileBase):
+    folder = models.ForeignKey(
+        'FacilityFolder',
+        related_name='files',
+        on_delete=models.CASCADE,
+        db_column='folder_id',
+        editable=False,
+    )
+
+class FacilityFilePage(FilePageBase):
+    file = models.ForeignKey(
+        'FacilityFile',
+        related_name='file_pages',
+        on_delete=models.CASCADE,
+        db_column='file_id',
+        editable=False,
+    )
+
+class FacilityFolder(FolderBase):
+    entity = models.ForeignKey(
+        'Facility',
+        related_name='folders',
+        on_delete=models.CASCADE,
+        db_column='entity_id',
+        editable=False,
+    )
 
 class Facility(models.Model):
     id = models.CharField(editable=False, max_length=200, primary_key=True)
@@ -131,22 +157,3 @@ class Facility(models.Model):
             models.Index(fields=['service_type', 'call_sign']),
         ]
 
-
-class FacilityFile(FileBase):
-    folder = models.ForeignKey(
-        'FacilityFolder',
-        related_name='files',
-        on_delete=models.CASCADE,
-        db_column='folder_id',
-        editable=False,
-    )
-
-
-class FacilityFolder(FolderBase):
-    entity = models.ForeignKey(
-        'Facility',
-        related_name='folders',
-        on_delete=models.CASCADE,
-        db_column='entity_id',
-        editable=False,
-    )

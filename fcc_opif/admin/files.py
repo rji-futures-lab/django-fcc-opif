@@ -1,5 +1,6 @@
 import csv
 from django.contrib import admin
+from django.urls import reverse
 from django.db.models import Count, Q
 from django.http import HttpResponse
 from django.utils.html import format_html
@@ -13,6 +14,7 @@ from fcc_opif.admin.filters import (
 from fcc_opif.models import (
     FacilityFolder, FacilityFile,
     CableFolder, CableFile,
+    FacilityFilePage, CableFilePage,
 )
 
 
@@ -60,6 +62,7 @@ class FileAdmin(admin.ModelAdmin, ExportCsvMixin):
     list_display = (
         'folder__entity',
         'file_name',
+        'display_url',
         'folder',
         'file_id',
         'file_extension',
@@ -93,6 +96,15 @@ class FileAdmin(admin.ModelAdmin, ExportCsvMixin):
     ordering = ('folder__entity', 'folder', 'file_name')
     list_select_related = ('folder__entity',)
 
+    '''
+    def change_view(self, request, object_id, form_url="", extra_context=None):
+        pass
+    '''
+
+    def display_url(self, obj):
+        return format_html(f"<a href='{reverse('extractor', args=[obj.file_id])}'>Extractor</a>")
+        #return format_html("<a href='/fcc_opif/extractor/{id}'>Extractor</a>", id=obj.file_id)
+
     def folder__entity(self, obj):
         return obj.folder.entity
 
@@ -119,6 +131,13 @@ class FileAdmin(admin.ModelAdmin, ExportCsvMixin):
             )
         return html
 
+@admin.register(CableFilePage, FacilityFilePage)
+class FilePageAdmin(admin.ModelAdmin):
+    list_display = (
+        'image', 
+        'file',
+        'page_num',
+    )
 
 @admin.register(CableFolder, FacilityFolder)
 class FolderAdmin(admin.ModelAdmin):
