@@ -138,6 +138,20 @@ class FilePageAdmin(admin.ModelAdmin):
         'file',
         'page_num',
     )
+    readonly_fields = (
+        'image', 
+        'file',
+        'page_num',
+    )
+
+    def has_add_permission(self, request, obj=None):
+        return False
+
+    def has_change_permission(self, request, obj=None):
+        return False
+
+    def has_delete_permission(self, request, obj=None):
+        return False
 
 @admin.register(CableFolder, FacilityFolder)
 class FolderAdmin(admin.ModelAdmin):
