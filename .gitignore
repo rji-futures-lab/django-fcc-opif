@@ -106,7 +106,7 @@ venv.bak/
 .mypy_cache/
 
 cache.sqlite
-secrets.cfg
+*.cfg
 
 zappa_settings.json
 media/
