@@ -19,7 +19,7 @@ def update_facility(facility_id):
 
 
 @task()
-def update_cable_system(id):
+def update_cable_system(cable_system_id):
     try:
         call_command(
             'updatecablesystem', cable_system_id
@@ -49,7 +49,8 @@ def handle_cable_systems():
 
 
 def main():
-
     handle_facilities()
-
     handle_cable_systems()
+
+if __name__ == "__main__":
+    main()

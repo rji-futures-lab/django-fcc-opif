@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.postgres.fields import JSONField
+from django.utils import timezone
 import requests
 from fcc_opif.constants import FCC_API_URL
 from fcc_opif.utils import camelcase_to_underscore, json_cleaner
@@ -123,6 +124,11 @@ class CableSystem(models.Model):
     cable_service_zip_codes = JSONField(null=True)
     cable_service_emp_units = JSONField(null=True)
     cable_communities = JSONField(null=True)
+    last_refreshed_ts = models.DateTimeField(
+        editable=False,
+        null=True,
+        blank=True,
+    )
     '''
     def clean_api_data(self):
         self.id
@@ -161,6 +167,8 @@ class CableSystem(models.Model):
                     defaults=clean_community_data,
                     community_unit_id=clean_community_data["community_unit_id"]
                 )
+
+        self.last_refreshed_ts = timezone.now()
 
         return self.save()
 
