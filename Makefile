@@ -8,4 +8,4 @@ syncdbschema:
 	python manage.py migrate
 
 test:
-	manage.py test
+	python manage.py test
