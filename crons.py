@@ -31,7 +31,9 @@ def update_cable_system(cable_system_id):
 def handle_facilities():
     call_command('getfacilities')
 
-    facilities = Facility.objects.order_by('last_refreshed_ts')[:30]
+    facilities = Facility.objects.order_by(
+        F('last_refreshed_ts').asc(nulls_first=True)
+    )[:30]
 
     for facility in facilities:
         update_facility(facility.id)
@@ -41,7 +43,9 @@ def handle_facilities():
 def handle_cable_systems():
     call_command('getcablesystems')
 
-    cable_systems = CableSystem.objects.order_by('last_refreshed_ts')[:30]
+    cable_systems = CableSystem.objects.order_by(
+        F('last_refreshed_ts').asc(nulls_first=True)
+    )[:30]
 
     for cable_system in cable_systems:
         update_cable_system(cable_system.id)
