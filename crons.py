@@ -1,6 +1,6 @@
 from django.core.management import call_command
 from django.core.management.base import CommandError
-from django.db.models import Q
+from django.db.models import Q, F
 from zappa.asynchronous import task
 from fcc_opif.models import Facility, CableSystem
 import logging
