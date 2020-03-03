@@ -45,7 +45,7 @@ LOGGING = {
         },
         'fcc_opif.management': {
             'handlers': ['console'],
-            'level': 'DEBUG',
+            'level': 'INFO',
             'propagate': True,
         },
     },
