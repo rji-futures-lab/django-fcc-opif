@@ -1,4 +1,4 @@
-.PHONY: syncdbschema test
+.PHONY: syncdbschema test encryptsecrets
 
 syncdbschema:
 	dropdb fcc-opif --if-exists
@@ -9,3 +9,9 @@ syncdbschema:
 
 test:
 	python manage.py test
+
+encryptsecrets:
+	rm -f secrets.tar.enc
+	tar cvf secrets.tar zappa_settings.json secrets.cfg
+	travis encrypt-file secrets.tar --add --pro
+	rm secrets.tar
