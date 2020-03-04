@@ -1,3 +1,4 @@
+from time import sleep
 from django.core.management import call_command
 from django.core.management.base import CommandError
 from django.db.models import Q, F
@@ -36,6 +37,7 @@ def handle_facilities():
     )[:30]
 
     for facility in facilities:
+        sleep(3)
         update_facility(facility.id)
     logger.info(f'Initialized update for {len(facilities)} facilities.')
 
@@ -48,6 +50,7 @@ def handle_cable_systems():
     )[:30]
 
     for cable_system in cable_systems:
+        sleep(3)
         update_cable_system(cable_system.id)
     logger.info(f'Initialized update for {len(cable_systems)} cable systems.')
 
