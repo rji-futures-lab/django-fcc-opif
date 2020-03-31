@@ -10,7 +10,7 @@ from fcc_opif.models import (
 
 @admin.register(CableSystem)
 class CableSystemAdmin(admin.ModelAdmin):
-
+    list_per_page = 25
     search_fields = ('legal_name', 'id',)
     list_display = (
         'id',

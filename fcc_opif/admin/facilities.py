@@ -11,6 +11,7 @@ from fcc_opif.models import Facility
 
 @admin.register(Facility)
 class FacilityAdmin(admin.ModelAdmin):
+    list_per_page = 25
     date_hierarchy = 'last_refreshed_ts'
     list_filter = (
         'service_type', 
