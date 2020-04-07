@@ -112,3 +112,4 @@ zappa_settings.json
 media/
 *.zip
 *.csv
+static
