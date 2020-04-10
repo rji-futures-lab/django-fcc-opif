@@ -17,6 +17,7 @@ django-storages = "*"
 python-documentcloud = "*"
 watchtower = "*"
 pillow = "*"
+postgres-copy = {editable = true,git = "https://github.com/rji-futures-lab/django-postgres-copy",ref = "gordo"}
 
 [requires]
 python_version = "3.7.4"
