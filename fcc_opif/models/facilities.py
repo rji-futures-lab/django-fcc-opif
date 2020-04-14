@@ -6,6 +6,7 @@ from fcc_opif.constants import FCC_API_URL, SERVICE_TYPES
 from fcc_opif.handlers import refresh_folder
 from fcc_opif.utils import camelcase_to_underscore, json_cleaner
 from .base import FileBase, FolderBase, FilePageBase
+from postgres_copy import CopyManager
 
 class FacilityFile(FileBase):
     folder = models.ForeignKey(
@@ -79,6 +80,7 @@ class Facility(models.Model):
         null=True,
         blank=True,
     )
+    objects = CopyManager()
 
     def clean_api_data(self):
         if len(self.frequency) == 0:

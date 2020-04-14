@@ -17,6 +17,10 @@ def update_facility(facility_id):
         )
     except CommandError as e:
         logger.error(e)
+    finally:
+        call_command(
+            'exporttocsv', 'Facility'
+        )
 
 
 @task()
@@ -27,6 +31,14 @@ def update_cable_system(cable_system_id):
         )
     except CommandError as e:
         logger.error(e)
+    finally:
+        call_command(
+            'exporttocsv', 'CableSystem'
+        )
+        call_command(
+            'exporttocsv', 'CableCommunity'
+        )
+
 
 
 def handle_facilities():
@@ -40,6 +52,13 @@ def handle_facilities():
         sleep(3)
         update_facility(facility.id)
     logger.info(f'Initialized update for {len(facilities)} facilities.')
+    call_command(
+            'exporttocsv', 'FacilityFolder'
+        )
+    call_command(
+            'exporttocsv', 'FacilityFile'
+        )
+
 
 
 def handle_cable_systems():
@@ -53,6 +72,12 @@ def handle_cable_systems():
         sleep(3)
         update_cable_system(cable_system.id)
     logger.info(f'Initialized update for {len(cable_systems)} cable systems.')
+    call_command(
+            'exporttocsv', 'CableFolder'
+        )
+    call_command(
+            'exporttocsv', 'CableFile'
+        )
 
 
 def main():

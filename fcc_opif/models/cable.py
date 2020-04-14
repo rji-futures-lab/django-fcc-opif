@@ -6,7 +6,7 @@ from fcc_opif.constants import FCC_API_URL
 from fcc_opif.utils import camelcase_to_underscore, json_cleaner
 from .base import FileBase, FolderBase, FilePageBase
 from fcc_opif.handlers import refresh_folder
-
+from postgres_copy import CopyManager
 
 class CableCommunity(models.Model):
     community_unit_id = models.CharField(max_length=200, primary_key=True)
@@ -17,6 +17,7 @@ class CableCommunity(models.Model):
     )
     community_name = models.CharField(max_length=200)
     county_name = models.CharField(max_length=200)
+    objects = CopyManager()
 
     def __str__(self):
         return self.community_name
@@ -129,6 +130,7 @@ class CableSystem(models.Model):
         null=True,
         blank=True,
     )
+    objects = CopyManager()
     '''
     def clean_api_data(self):
         self.id

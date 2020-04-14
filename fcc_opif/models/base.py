@@ -8,7 +8,7 @@ from fcc_opif.constants import DOCUMENTCLOUD_PROJECT, FCC_API_URL
 from fcc_opif.utils import camelcase_to_underscore, json_cleaner
 from documentcloud import DocumentCloud
 import logging
-
+from postgres_copy import CopyManager
 
 logger=logging.getLogger(__name__)
 
@@ -65,6 +65,7 @@ class FileBase(models.Model):
         blank=True,
         max_length=300,
     )
+    objects = CopyManager()
 
     @property
     def url(self):
@@ -184,6 +185,7 @@ class FolderBase(models.Model):
         null=True,
         blank=True,
     )
+    objects = CopyManager()
     
     def refresh_from_fcc(self):
         """
@@ -249,6 +251,7 @@ class FolderBase(models.Model):
 class FilePageBase(models.Model):
     image = models.ImageField(upload_to=get_upload_path, null=True)
     page_num = models.IntegerField(editable=False, null=True)
+    objects = CopyManager()
 
     @property
     def relative_path(self):
