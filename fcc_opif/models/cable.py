@@ -36,6 +36,7 @@ class CableFile(FileBase):
         editable=False,
     )
 
+
 class CableFilePage(FilePageBase):
     file = models.ForeignKey(
         'CableFile',
@@ -44,6 +45,7 @@ class CableFilePage(FilePageBase):
         db_column='file_id',
         editable=False,
     )
+
 
 class CableFolder(FolderBase):
     entity = models.ForeignKey(

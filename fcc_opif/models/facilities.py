@@ -17,6 +17,7 @@ class FacilityFile(FileBase):
         editable=False,
     )
 
+
 class FacilityFilePage(FilePageBase):
     file = models.ForeignKey(
         'FacilityFile',
@@ -26,6 +27,7 @@ class FacilityFilePage(FilePageBase):
         editable=False,
     )
 
+
 class FacilityFolder(FolderBase):
     entity = models.ForeignKey(
         'Facility',
@@ -34,6 +36,7 @@ class FacilityFolder(FolderBase):
         db_column='entity_id',
         editable=False,
     )
+
 
 class Facility(models.Model):
     id = models.CharField(editable=False, max_length=200, primary_key=True)

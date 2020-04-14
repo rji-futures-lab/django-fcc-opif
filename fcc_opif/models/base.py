@@ -248,12 +248,18 @@ class FolderBase(models.Model):
             models.Index(fields=['folder_path']),
         ]
 
+
 class FilePageBase(models.Model):
     image = models.ImageField(upload_to=get_upload_path, null=True)
     page_num = models.IntegerField(editable=False, null=True)
     objects = CopyManager()
 
+    class Meta:
+        abstract = True
+
     @property
     def relative_path(self):
         path = f'{self.file.file_id}/{self.page_num}.jpg'  # noqa
         return path
+
+
