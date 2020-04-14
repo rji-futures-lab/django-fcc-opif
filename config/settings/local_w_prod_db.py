@@ -1,6 +1,6 @@
 """Django settings when serving locally with prod database."""
 # flake8: noqa
-from .prod import *
+from .local import *
 
 DEBUG = True
 
@@ -23,24 +23,3 @@ ALLOWED_HOSTS = [
     '127.0.0.1',
     '.ngrok.io',
 ]
-
-LOGGING = {
-    'version': 1,
-    'disable_existing_loggers': False,
-    'handlers': {
-        'console': {
-            'class': 'logging.StreamHandler',
-        },
-    },
-    'loggers': {
-        'django': {
-            'handlers': ['console'],
-            'level': 'INFO',
-        },
-        'fcc_opif.management': {
-            'handlers': ['console'],
-            'level': 'DEBUG',
-            'propagate': True,
-        },
-    },
-}
