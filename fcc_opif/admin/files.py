@@ -132,28 +132,30 @@ class FileAdmin(admin.ModelAdmin, ExportCsvMixin):
             )
         return html
 
-@admin.register(CableFilePage, FacilityFilePage)
-class FilePageAdmin(admin.ModelAdmin):
-    list_per_page = 25
-    list_display = (
-        'image', 
-        'file',
-        'page_num',
-    )
-    readonly_fields = (
-        'image', 
-        'file',
-        'page_num',
-    )
 
-    def has_add_permission(self, request, obj=None):
-        return False
+# @admin.register(CableFilePage, FacilityFilePage)
+# class FilePageAdmin(admin.ModelAdmin):
+#     list_per_page = 25
+#     list_display = (
+#         'image', 
+#         'file',
+#         'page_num',
+#     )
+#     readonly_fields = (
+#         'image', 
+#         'file',
+#         'page_num',
+#     )
 
-    def has_change_permission(self, request, obj=None):
-        return False
+#     def has_add_permission(self, request, obj=None):
+#         return False
 
-    def has_delete_permission(self, request, obj=None):
-        return False
+#     def has_change_permission(self, request, obj=None):
+#         return False
+
+#     def has_delete_permission(self, request, obj=None):
+#         return False
+
 
 @admin.register(CableFolder, FacilityFolder)
 class FolderAdmin(admin.ModelAdmin):
