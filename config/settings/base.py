@@ -105,3 +105,7 @@ USE_L10N = True
 USE_TZ = True
 
 LOGIN_URL = '/admin/login/'
+
+CSRF_TRUSTED_ORIGINS = [
+    '.s3.amazonaws.com',
+]

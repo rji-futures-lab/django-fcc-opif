@@ -47,7 +47,7 @@ STATICFILES_DIRS = [
 
 DEFAULT_FILE_STORAGE = 'django.core.files.storage.FileSystemStorage'
 MEDIA_ROOT = 'media'
-
+MEDIA_URL = '/media/'
 
 INTERNAL_IPS = [
     # ...
