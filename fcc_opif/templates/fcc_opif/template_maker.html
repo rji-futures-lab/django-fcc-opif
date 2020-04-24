@@ -18,7 +18,7 @@
         
     <script src="https://cdn.jsdelivr.net/npm/pdfjs-dist@2.2.228/build/pdf.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/3.6.2/fabric.min.js"></script>
-    <script src="download.js"></script>
+    <script src="{% static 'fcc_opif/download.js' %}"></script>
     <script>
         /*
             Canvas          the native DOM Canvas element that Javascript uses
@@ -299,6 +299,7 @@
         function saveTemplate()
         {
             var template = new Object;
+            template.file_id = "{{ file_id }}";
             template.pages = []
             canvases.forEach(function(entry){
                 entry.getObjects().forEach(function(obj){
@@ -314,7 +315,7 @@
                 template.pages.push(entry.toJSON(['label','pctLeft','pctTop','pctWidth','pctHeight']));
             });
 
-            download(JSON.stringify(template,null,2), "template.json", "text/plain");
+            download(JSON.stringify(template,null,2), "{% get_media_prefix %}/{{ file_id }}.json", "text/plain");
         }
         
         //clearTemplate wipes all selection boxes from all the fabric.Canvases

@@ -15,6 +15,7 @@ from fcc_opif.models import (
     FacilityFolder, FacilityFile,
     CableFolder, CableFile,
     FacilityFilePage, CableFilePage,
+    Facility, CableSystem,
 )
 
 
@@ -103,7 +104,10 @@ class FileAdmin(admin.ModelAdmin, ExportCsvMixin):
     '''
 
     def display_url(self, obj):
-        return format_html(f"<a href='{reverse('extractor', args=[obj.file_id])}'>Extractor</a>")
+        if isinstance(obj.folder.entity, Facility):
+            return format_html(f"<a href='{reverse('facility_extractor', args=[obj.file_id])}'>Extractor</a>")
+        else:
+            return format_html(f"<a href='{reverse('cable_system_extractor', args=[obj.file_id])}'>Extractor</a>")
         #return format_html("<a href='/fcc_opif/extractor/{id}'>Extractor</a>", id=obj.file_id)
 
     def folder__entity(self, obj):
@@ -156,6 +160,8 @@ class FileAdmin(admin.ModelAdmin, ExportCsvMixin):
 #     def has_delete_permission(self, request, obj=None):
 #         return False
 
+    
+    
 
 @admin.register(CableFolder, FacilityFolder)
 class FolderAdmin(admin.ModelAdmin):
