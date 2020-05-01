@@ -1,0 +1,10 @@
+{% extends 'fcc_opif/base.html' %}
+{% block content %}
+    <ul>
+		{% for file_form in object_list %}
+		    <li>{{ file_form.name }}</li>
+		{% empty %}
+		    <li>No forms yet.</li>
+		{% endfor %}
+	</ul>
+{% endblock %}

@@ -1,9 +1,12 @@
 from django.shortcuts import render, get_object_or_404
-from fcc_opif.models import FacilityFile, CableFile
+from fcc_opif.models import FacilityFile, CableFile, FileForm
 from django.views import generic
+from django.views.generic.list import ListView
+from django.views.generic.edit import CreateView
 from django.contrib.auth.decorators import login_required
 from django.forms.models import model_to_dict
 from django.conf import settings
+from .forms import FileFormForm
 
 @login_required()
 def facilityfile(request, file_id):
@@ -28,3 +31,30 @@ def cablesystemfile(request, file_id):
         'fcc_opif/template_maker.html',
         {'file_url': file.stored_file.url, 'file_id': file_id}
     )
+
+class FileFormList(ListView):
+
+    model = FileForm
+    paginate_by = 100
+    template = 'fcc_opic/fileform_list.html'
+
+class FileFormCreate(CreateView):
+
+    model = FileForm
+    fields = ['name']
+    template_name_suffix = '_create'
+    success_url = '/fcc_opif/fileform_list'
+
+def update_form(request):
+    if request.method == 'POST':
+        form = FileFormForm(request.POST)
+        if form.is_valid():
+            file = FacilityFile.object.get(url = form.data['url'])
+            fileform.proto_file_field = file.file_id
+            fileform = FileForm.objects.get(name=form.data['name'])
+            fileform.boxes = form.data['boxes']
+            fileform.save()
+    else:
+        form = FileFormForm()
+
+    return render(request, 'fcc_opif/form_maker.html', {'form': form})

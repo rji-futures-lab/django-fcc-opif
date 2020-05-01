@@ -12,6 +12,8 @@ from .facilities import (
     FacilityFolder,
 )
 
+from .fileform import FileForm
+
 __all__ = (
     'CableCommunity',
     'CableFile',
@@ -20,4 +22,5 @@ __all__ = (
     'Facility',
     'FacilityFile',
     'FacilityFolder',
+    'FileForm',
 )

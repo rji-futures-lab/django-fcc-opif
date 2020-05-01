@@ -14,9 +14,12 @@ from fcc_opif.admin.files import(
     FolderAdmin,
 )
 
+from fcc_opif.admin.file_forms import FileFormAdmin
+
 __all__ = (
     'CableCommunityAdmin',
     'CableSystemAdmin',
     'FileAdmin',
     'FolderAdmin',
+    'FileFormAdmin',
 )
