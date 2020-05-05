@@ -342,11 +342,13 @@
                         obj.pctHeight = obj.height / entry.height;
                     }
                 });
+                delete entry.backgroundImage;
                 template.pages.push(entry.toJSON(['label','pctLeft','pctTop','pctWidth','pctHeight']));
+
             });
 
             document.getElementById("{{ form.boxes.auto_id }}").value = JSON.stringify(template,null,2), "{% get_media_prefix %}/{{ file_id }}.json", "text/plain";
-            //document.forms.fileform.submit();
+            document.forms.fileform.submit();
             console.log(document.getElementById("{{ form.boxes.auto_id }}").value);
         }
         

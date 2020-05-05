@@ -49,9 +49,10 @@ def update_form(request):
     if request.method == 'POST':
         form = FileFormForm(request.POST)
         if form.is_valid():
-            file = FacilityFile.object.get(url = form.data['url'])
-            fileform.proto_file_field = file.file_id
+            relative_url = form.data['url'].lstrip(settings.MEDIA_URL)
+            file = FacilityFile.objects.get(stored_file = relative_url)
             fileform = FileForm.objects.get(name=form.data['name'])
+            fileform.proto_file_field = file.file_id
             fileform.boxes = form.data['boxes']
             fileform.save()
     else:
